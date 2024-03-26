@@ -1,0 +1,5 @@
+require("balm/init")
+require("balm/tests/object_test")
+require("balm/tests/utf8_test")
+require("balm/tests/structs_test")
+require("balm/tests/modules_test")
