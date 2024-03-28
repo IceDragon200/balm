@@ -1,6 +1,7 @@
-local ByteBuf = lily_core:require("util/byte_buf")
+local ByteBuf = require("balm/p/byte_buf")
+local Object = require("balm/object")
 
-local Bytes = lily.Object:extends("Bytes")
+local Bytes = Object:extends("Bytes")
 local ic = Bytes.instance_class
 
 function ic:initialize(length)

@@ -1,8 +1,9 @@
-local ByteBuf = lily_core:require("util/byte_buf")
-local ScalarTypes = lily_core:require("util/bin_types/scalars")
-local Map = lily_core:require("util/map")
+local ByteBuf = require("balm/p/byte_buf")
+local ScalarTypes = require("balm/p/bin_types/scalars")
+local tablem = require("balm/m/table")
+local Object = require("balm/object")
 
-local MapType = lily.Object:extends("MapType")
+local MapType = Object:extends("MapType")
 local ic = MapType.instance_class
 
 function ic:initialize(key_type, value_type)
@@ -14,7 +15,7 @@ function ic:initialize(key_type, value_type)
 end
 
 function ic:write(file, data)
-  local len = Map.length(data)
+  local len = tablem.length(data)
   local all_bytes_written = 0
   local bytes_written, err = ByteBuf.w_u32(file, len)
   all_bytes_written = all_bytes_written + bytes_written

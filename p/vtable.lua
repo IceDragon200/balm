@@ -1,8 +1,9 @@
-local ByteBuf = require("util/byte_buf")
-local Bytes = require("util/bin_types/bytes")
-local BinSchema = require("util/bin_schema")
-local StringBuf = require("util/string_buf")
-local MarshallValue = require("util/bin_types/marshall_value")
+local ByteBuf = require("balm/p/byte_buf")
+local Bytes = require("balm/p/bin_types/bytes")
+local BinSchema = require("balm/p/bin_schema")
+local StringBuffer = require("balm/u/string_buffer")
+local MarshallValue = require("balm/p/bin_types/marshall_value")
+local Object = require("balm/object")
 
 local MMAPSchema = BinSchema:new({
   {"magic", Bytes:new(4)},
@@ -13,7 +14,7 @@ local MMAPSchema = BinSchema:new({
   {"data", "map", "u8string", MarshallValue:new()},
 })
 
-local VTable = lily.Object:extends("VTable")
+local VTable = Object:extends("VTable")
 local ic = VTable.instance_class
 
 function ic:initialize(filename, initializer)
@@ -30,7 +31,7 @@ function ic:initialize(filename, initializer)
 end
 
 function ic:save_table()
-  local buffer = StringBuf:new("", "w")
+  local buffer = StringBuffer:new("", "w")
   -- MMAP - Marshall Map
   local bytes_written, err = MMAPSchema:write(buffer, {
     magic = "MMAP",

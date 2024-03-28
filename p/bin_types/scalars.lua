@@ -1,4 +1,5 @@
-local ByteBuf = lily_core:require("util/byte_buf")
+local ByteBuf = require("balm/p/byte_buf")
+local Object = require("balm/object")
 
 local ScalarTypes = {
   i8 = {},

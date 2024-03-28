@@ -1,4 +1,5 @@
-local ByteBuf = lily_core:require("util/byte_buf")
+local ByteBuf = require("balm/p/byte_buf")
+local Object = require("balm/object")
 
 --[[
 Marshall values can be a specific scalar type, annotated by a letter code
@@ -9,7 +10,7 @@ Q for u32 strings
 B for u8 booleans
 T for tables
 ]]
-local MarshallValue = lily.Object:extends("MarshallValue")
+local MarshallValue = Object:extends("MarshallValue")
 local ic = MarshallValue.instance_class
 
 function ic:initialize()

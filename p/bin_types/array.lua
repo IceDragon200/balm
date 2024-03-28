@@ -1,7 +1,8 @@
-local ByteBuf = lily_core:require("util/byte_buf")
-local ScalarTypes = lily_core:require("util/bin_types/scalars")
+local ByteBuf = require("balm/p/byte_buf")
+local ScalarTypes = require("balm/p/bin_types/scalars")
+local Object = require("balm/object")
 
-local ArrayType = lily.Object:extends("ArrayType")
+local ArrayType = Object:extends("ArrayType")
 local ic = ArrayType.instance_class
 
 function ic:initialize(value_type, len)

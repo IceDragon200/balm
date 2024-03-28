@@ -1,12 +1,13 @@
--- @namespace foundation.com.ByteBuf
-local ByteDecoder = assert(foundation.com.ByteDecoder)
-local bit = assert(foundation.com.bit, "expected bit module")
+--- @namespace balm.p.ByteBuf
+local ByteDecoder = require("balm/p/byte_decoder")
+local bit = require("balm/u/bit")
+local Object = require("balm/object")
 
 local ByteBuf = {}
 local ic
 
--- @class Base
-ByteBuf.Base = foundation.com.Class:extends("ByteBuf.Base")
+--- @class Base
+ByteBuf.Base = Object:extends("ByteBuf.Base")
 do
   ic = ByteBuf.Base.instance_class
   --
@@ -682,6 +683,6 @@ do
   end
 end
 
-foundation.com.ByteBuf = ByteBuf
--- @const little: Little
-foundation.com.ByteBuf.little = ByteBuf.Little:new()
+ByteBuf.LE = ByteBuf.Little:new()
+
+return ByteBuf

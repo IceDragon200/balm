@@ -10,7 +10,7 @@
 local Object = require("balm/object")
 
 local function get_us_time()
-  return 0
+  return os.clock() * 1000000
 end
 
 local HEX_TABLE = {
