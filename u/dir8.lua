@@ -1,20 +1,20 @@
 --
 -- 8 Direction helper
 --
-local Vec2 = lily_core:require("util/vec2")
+local Vec2 = require("balm/m/vector/2")
 
 local Dir8 = {
   DIRECTIONS = {
-    [5] = Vec2:new(0, 0),
-    [1] = Vec2:new(-1, 1),
-    [2] = Vec2:new(0, 1),
-    [3] = Vec2:new(1, 1),
-    [4] = Vec2:new(-1, 0),
-    [5] = Vec2:new(0, 0),
-    [6] = Vec2:new(1, 0),
-    [7] = Vec2:new(-1, -1),
-    [8] = Vec2:new(0, -1),
-    [9] = Vec2:new(1, -1),
+    [5] = Vec2.new(0, 0),
+    [1] = Vec2.new(-1, 1),
+    [2] = Vec2.new(0, 1),
+    [3] = Vec2.new(1, 1),
+    [4] = Vec2.new(-1, 0),
+    [5] = Vec2.new(0, 0),
+    [6] = Vec2.new(1, 0),
+    [7] = Vec2.new(-1, -1),
+    [8] = Vec2.new(0, -1),
+    [9] = Vec2.new(1, -1),
   },
   DIR4_CW = {
     [8] = 6,
