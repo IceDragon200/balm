@@ -1,4 +1,5 @@
 local Object = require("balm/object")
+local Vector3 = require("balm/m/vector/3")
 
 --- @namespace balm.s
 
@@ -14,17 +15,44 @@ do
   local ic = DataMatrix.instance_class
 
   --- @spec #initialize(w: Integer, h: Integer, d: Integer, callback: Function): void
-  --- @spec #initialize(w: Integer, h: Integer, d: Integer, default: Any): void
+  --- @spec #initialize(w: Integer, h: Integer, d: Integer, default: T): void
   function ic:initialize(w, h, d, default_or_callback)
     ic._super.initialize(self)
 
-    self.m_w = w
-    self.m_h = h
-    self.m_d = d
-    self.m_size = 0
+    self.m_w = math.floor(w)
+    self.m_h = math.floor(h)
+    self.m_d = math.floor(d)
+    self.m_volume = 0
+    self.m_data = nil
 
     self:_validate_declared_size()
     self:_initialize_data(default_or_callback)
+  end
+
+  --- Initializes the target data matrix from another matrix.
+  ---
+  --- @mutative
+  --- @spec #initialize_copy(other: DataMatrix): void
+  function ic:initialize_copy(other)
+    self.m_w = other.m_w
+    self.m_h = other.m_h
+    self.m_d = other.m_d
+    self.m_volume = other.m_volume
+    self.m_data = {}
+    for i = 1,self.m_volume do
+      self.m_data[i] = other.m_data[i]
+    end
+  end
+
+  --- Creates a copy of the data matrix, note that the data is only,
+  --- copied at the top-level, if a cell contains any tables those
+  --- will be left as is.
+  ---
+  --- @spec #copy(): DataMatrix
+  function ic:copy()
+    local result = self._class:alloc()
+    result:initialize_copy(self)
+    return result
   end
 
   function ic:_validate_declared_size()
@@ -32,7 +60,7 @@ do
     assert(self.m_h > 0, "height must be greater than 0")
     assert(self.m_d > 0, "depth must be greater than 0")
 
-    self.m_size = self.m_w * self.m_h * self.m_d
+    self.m_volume = self.m_w * self.m_h * self.m_d
   end
 
   function ic:_initialize_data(default_or_callback)
@@ -57,34 +85,284 @@ do
     self:fill(default)
   end
 
-  --- Reports the size in cells of the data matrix
-  ---
-  --- @spec #size(): Integer
-  function ic:size()
-    return self.m_size
+  --- @spec #data(): T[]
+  function ic:data()
+    return self.m_data
   end
 
-  --- @spec #fill(Any): void
+  --- Reports the width of the data matrix
+  ---
+  --- @spec #width(): Integer
+  function ic:width()
+    return self.m_w
+  end
+
+  --- Reports the height of the data matrix
+  ---
+  --- @spec #height(): Integer
+  function ic:height()
+    return self.m_h
+  end
+
+  --- Reports the depth of the data matrix
+  ---
+  --- @spec #depth(): Integer
+  function ic:depth()
+    return self.m_d
+  end
+
+  --- Reports the size in cells of the data matrix
+  ---
+  --- @spec #size(): Vector3
+  function ic:size()
+    return Vector3.new(self.m_w, self.m_h, self.m_d)
+  end
+
+  --- Reports the size in cells of the data matrix
+  ---
+  --- @spec #volume(): Integer
+  function ic:volume()
+    return self.m_volume
+  end
+
+  --- @mutative
+  --- @spec #fill(T): void
   function ic:fill(value)
-    for i1 = 1,self.m_size do
+    for i1 = 1,self.m_volume do
       self.m_data[i1] = value
     end
   end
 
+  function ic:xyz_to_index(x, y, z)
+    return 1 + z * self.m_h * self.m_w + y * self.m_w + x
+  end
+
+  function ic:index_to_xyz(i1)
+    local i = i1 - 1
+    x = math.floor(i % self.m_w)
+    y = math.floor((i / self.m_w) % self.m_h)
+    z = math.floor((i / self.m_h) / self.m_w)
+    return x, y, z
+  end
+
+  --- @spec #wrap_coords(
+  ---   x: Integer,
+  ---   y: Integer,
+  ---   z: Integer
+  --- ): (Integer, Integer, Integer)
+  function ic:wrap_coords(x, y, z)
+    x = x % self.m_w
+    y = y % self.m_h
+    z = z % self.m_d
+
+    return x, y, z
+  end
+
+  function ic:test_bounds(x, y, z)
+    if x < 0 or x >= self.m_w then
+      return false, "x is out of bounds"
+    end
+
+    if y < 0 or y >= self.m_h then
+      return false, "y is out of bounds"
+    end
+
+    if z < 0 or z >= self.m_d then
+      return false, "z is out of bounds"
+    end
+
+    return true
+  end
+
+  --- @mutative
   --- @spec #fill_lazy(Function/4): void
   function ic:fill_lazy(callback)
     local x
     local y
     local z
-    local i
-    for i1 = 1,self.m_size do
-      i = i1 - 1
-      x = math.floor(i % self.m_w)
-      y = math.floor((i / self.m_w) % self.m_h)
-      z = math.floor((i / self.m_y) / self.m_w)
-
-      self.m_data[i1] = callback(x, y, z, i)
+    for i1 = 1,self.m_volume do
+      x, y, z = self:index_to_xyz(i1)
+      self.m_data[i1] = callback(x, y, z, i1 - 1)
     end
+  end
+
+  --
+  -- Cell Operations
+  --
+
+  --- Retrieve cell at specified xyz coordinates.
+  ---
+  --- @spec #get(
+  ---   x: Integer,
+  ---   y: Integer,
+  ---   z: Integer,
+  ---   is_wrapped: Boolean = false
+  --- ): T
+  function ic:get(x, y, z, is_wrapped)
+    if is_wrapped then
+      x, y, z = self:wrap_coords(x, y, z)
+    end
+
+    local ok, err = self:test_bounds(x, y, z)
+    if ok then
+      local i1 = self:xyz_to_index(x, y, z)
+      return self.m_data[i1]
+    else
+      error(err)
+    end
+  end
+
+  --- Put a value at specified xyz coordinates
+  ---
+  --- @mutative
+  --- @spec #put(
+  ---   x: Integer,
+  ---   y: Integer,
+  ---   z: Integer,
+  ---   value: T,
+  ---   is_wrapped: Boolean
+  --- ): void
+  function ic:put(x, y, z, value, is_wrapped)
+    if is_wrapped then
+      x, y, z = self:wrap_coords(x, y, z)
+    end
+
+    local ok, err = self:test_bounds(x, y, z)
+    if ok then
+      local i1 = self:xyz_to_index(x, y, z)
+      self.m_data[i1] = value
+    else
+      error(err)
+    end
+  end
+
+  --- Put a value at specified xyz coordinates
+  ---
+  --- @mutative
+  --- @spec #put_lazy(
+  ---   x: Integer,
+  ---   y: Integer,
+  ---   z: Integer,
+  ---   value: Function/4 => T,
+  ---   is_wrapped: Boolean
+  --- ): void
+  function ic:put_lazy(x, y, z, callback, is_wrapped)
+    if is_wrapped then
+      x, y, z = self:wrap_coords(x, y, z)
+    end
+
+    local ok, err = self:test_bounds(x, y, z)
+    if ok then
+      local i1 = self:xyz_to_index(x, y, z)
+      self.m_data[i1] = callback(x, y, z, i1 - 1)
+    else
+      error(err)
+    end
+  end
+
+  --- @spec #sub_matrix(cuboid: Cuboid, is_wrapped: Boolean): DataMatrix
+  function ic:sub_matrix(cuboid, is_wrapped)
+    local ok, err
+    local x, y, z = cuboid.x, cuboid.y, cuboid.z
+    local w, h, d = cuboid.w, cuboid.h, cuboid.d
+    if is_wrapped then
+      x, y, z = self:wrap_coords(x, y, z)
+    end
+    ok, err = self:test_bounds(x, y, z)
+    if not ok then
+      error(err)
+    end
+    if not is_wrapped then
+      ---
+      local x2, y2, z2 = x + w, y + h, z + d
+      ok, err = self:test_bounds(x2, y2, z2)
+      if not ok then
+        error(err)
+      end
+    end
+
+    local szp
+    local syp
+    local szyp
+    local si
+    local dzp
+    local dyp
+    local dzyp
+    local di
+    local smx, smy, smz
+    local res = DataMatrix:new(w, h, d)
+    local res_data = res.m_data
+
+    for mz = 0,d do
+      smz = z + mz
+      if is_wrapped then
+        smz = smz % self.m_d
+      end
+      szp = smz * self.m_h * self.m_w
+      dzp = mz * h * w
+      for my = 0,h do
+        smy = y + my
+        if is_wrapped then
+          smy = smy % self.m_h
+        end
+        syp = smy * self.m_w
+        dyp = my * w
+        szyp = szp + syp
+        dzyp = dzp + dyp
+        for mx = 0,w do
+          smx = x + mx
+          if is_wrapped then
+            smx = smx % self.m_w
+          end
+          si = szyp + smx
+          di = dzyp + mx
+          res_data[di + 1] = self.m_data[si + 1]
+        end
+      end
+    end
+
+    return res
+  end
+
+  --- @spec #reduce(acc: Any, callback: Function/6 => Any): Any
+  function ic:reduce(acc, callback)
+    local i1
+    for z = 0,self.m_d-1 do
+      for y = 0,self.m_h-1 do
+        for x = 0,self.m_w-1 do
+          i1 = self:xyz_to_index(x, y, z)
+          callback(x, y, z, i1 - 1, self.m_data[i1], acc)
+        end
+      end
+    end
+    return acc
+  end
+
+  --- @spec #each(acc: Any, callback: Function/5): self
+  function ic:each(callback)
+    self:reduce(0, function (x, y, z, i, d, c)
+      callback(x, y, z, i, d)
+      return c + 1
+    end)
+    return self
+  end
+
+  --- Executes given callback over every cell in the matrix.
+  ---
+  --- @mutative
+  --- @spec #map(callback: Function/5): self
+  function ic:map(callback)
+    local i1
+    for z = 0,self.m_d-1 do
+      for y = 0,self.m_h-1 do
+        for x = 0,self.m_w-1 do
+          i1 = self:xyz_to_index(x, y, z)
+          self.m_data[i1] = callback(x, y, z, i1 - 1, self.m_data[i1])
+        end
+      end
+    end
+
+    return self
   end
 end
 
