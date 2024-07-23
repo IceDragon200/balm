@@ -5,7 +5,7 @@ local Object = require("balm/object")
 ---
 --- Singlely linked list, suitable for Queues
 ---
---- @since "1.2.0"
+--- @since "0.1.0"
 --- @class LinkedList<T>
 local LinkedList = Object:extends("balm.LinkedList")
 local ic = LinkedList.instance_class

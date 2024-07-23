@@ -1,5 +1,6 @@
 return {
   ansi = require("balm/m/ansi"),
+  cuboid = require("balm/m/cuboid"),
   easers = require("balm/m/easers"),
   list = require("balm/m/list"),
   number = require("balm/m/number"),
@@ -11,4 +12,5 @@ return {
   vector2 = require("balm/m/vector/2"),
   vector3 = require("balm/m/vector/3"),
   vector4 = require("balm/m/vector/4"),
+  value = require("balm/m/value"),
 }

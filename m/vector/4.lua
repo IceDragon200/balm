@@ -1,6 +1,6 @@
 local number_round = require("balm/m/number").round
 
---- @namespace balm.s.Vector4
+--- @namespace balm.m.vector4
 local xyzw = {"x", "y", "z", "w"}
 local m
 m = {
@@ -22,7 +22,6 @@ m = {
 ---   w: Number,
 --- }
 
---- @since "1.29.0"
 --- @spec is_m(obj: Any): Boolean
 --- @spec #is_m(): Boolean
 function m.is_m(obj)
@@ -32,6 +31,12 @@ end
 --- @spec new(x: Number, y: Number, z: Number, w: Number): Vector4
 function m.new(x, y, z, w)
   return setmetatable({ x = x, y = y, z = z, w = w }, m.metatable)
+end
+
+--- @since "2024.7.23"
+--- @spec random(): Vector4
+function m.random()
+  return m.new(math.random(), math.random(), math.random(), math.random())
 end
 
 --- @spec copy(Vector4): Vector4
@@ -90,7 +95,6 @@ function m.distance(a, b)
   return math.sqrt(x + y + z + w)
 end
 
---- @since "1.29.0"
 --- @spec length(a: Vector4): Number
 --- @spec #length(): Number
 function m.length(a)
@@ -119,7 +123,6 @@ end
 
 --- @spec round(dest: Vector4, v1: Vector4): Vector4
 --- @spec #round(v1: Vector4): Vector4
---- @since "1.40.0"
 --- @spec round(dest: Vector4, v1: Vector4, places: Integer): Vector4
 --- @spec #round(v1: Vector4, places: Integer): Vector4
 function m.round(dest, v1, places)
@@ -137,7 +140,6 @@ function m.dot(v1, v2)
   return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w
 end
 
---- @since "1.40.0"
 --- @mutative dest
 --- @spec normalize(dest: Vector4, v1: Vector4): Vector4
 function m.normalize(dest, v1)
@@ -206,7 +208,6 @@ function m.idivide(dest, v1, v2)
   return dest
 end
 
---- @since "1.28.0"
 --- @spec apply(dest: Vector4, source: Vector4, func: Function/1): Vector4
 --- @spec #apply(source: Vector4, func: Function/1): Vector4
 function m.apply(dest, v1, func)
@@ -220,7 +221,6 @@ end
 
 --- http://number-none.com/product/Understanding%20Slerp,%20Then%20Not%20Using%20It/
 ---
---- @since "1.40.0"
 --- @mutative dest
 --- @spec slerp(dest: Vector4, v1: Vector4, v2: Vector4, t: Number): Vector4
 --- @spec #slerp(v1: Vector4, v2: Vector4, t: Number): Vector4
@@ -258,15 +258,12 @@ m.mul = m.multiply
 m.div = m.divide
 m.idiv = m.idivide
 
---- @since "1.27.0"
 --- @spec metatable.__tostring(Vector4): String
 m.metatable.__tostring = assert(m.to_string)
 
---- @since "1.27.0"
 --- @spec metatable.__eq(Vector4, Vector4): Boolean
 m.metatable.__eq = assert(m.equals)
 
---- @since "1.27.0"
 --- @spec m.metatable.__unm(Vector4): Vector4
 function m.metatable.__unm(v4)
   return m.new(
@@ -277,7 +274,6 @@ function m.metatable.__unm(v4)
   )
 end
 
---- @since "1.27.0"
 --- @spec metatable.__add(Vector4, Vector4): Vector4
 function m.metatable.__add(a, b)
   return m.new(
@@ -288,7 +284,6 @@ function m.metatable.__add(a, b)
   )
 end
 
---- @since "1.27.0"
 --- @spec metatable.__sub(Vector4, Vector4): Vector4
 function m.metatable.__sub(a, b)
   return m.new(
@@ -299,7 +294,6 @@ function m.metatable.__sub(a, b)
   )
 end
 
---- @since "1.27.0"
 --- @spec metatable.__mul(Vector4, Vector4): Vector4
 function m.metatable.__mul(a, b)
   return m.new(
@@ -310,7 +304,6 @@ function m.metatable.__mul(a, b)
   )
 end
 
---- @since "1.27.0"
 --- @spec metatable.__div(Vector4, Vector4): Vector4
 function m.metatable.__div(a, b)
   return m.new(

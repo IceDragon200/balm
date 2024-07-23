@@ -8,6 +8,7 @@
 ]]
 --- @namespace balm
 local Object = require("balm/object")
+local inspect = require("balm/m/value").inspect
 
 local function get_us_time()
   return os.clock() * 1000000
@@ -164,7 +165,7 @@ local function iodata_to_string_recur(value, result, index)
     index = index + 1
     result[index] = value
   else
-    error("unexpected value " .. dump(value))
+    error("unexpected value " .. inspect(value))
   end
   return result, index
 end
@@ -179,7 +180,7 @@ local function iodata_to_string(value)
     local result = iodata_to_string_recur(value, {}, 0)
     return table.concat(result)
   else
-    error("unexpected value " .. dump(value))
+    error("unexpected value " .. inspect(value))
   end
 end
 
@@ -320,7 +321,7 @@ function ic:neat_dump(value)
   if ty == "string" then
     return ty .. "<\"" .. string_hex_escape(value) .. "\">[" .. #value .. "]"
   else
-    return ty .. "<" .. dump(value) .. ">"
+    return ty .. "<" .. inspect(value) .. ">"
   end
 end
 

@@ -1,6 +1,7 @@
 require("balm/type_casts")
 
 return {
+  version = "2024.7.23",
   m = require("balm/modules"),
   Object = require("balm/object"),
   p = require("balm/persistence"),

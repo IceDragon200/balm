@@ -1,6 +1,6 @@
 local number_round = require("balm/m/number").round
 
---- @namespace balm.s.Vector2
+--- @namespace balm.m.vector2
 local xy = {"x", "y"}
 
 local m
@@ -30,6 +30,12 @@ end
 --- @spec new(x: Number, y: Number): Vector2
 function m.new(x, y)
   return setmetatable({ x = x, y = y }, m.metatable)
+end
+
+--- @since "2024.7.23"
+--- @spec random(): Vector2
+function m.random()
+  return m.new(math.random(), math.random())
 end
 
 --- @spec copy(Vector2): Vector2

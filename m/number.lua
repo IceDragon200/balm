@@ -126,7 +126,6 @@ function m.integer_crockford_base32_le_encode(integer, len, return_table)
 end
 
 --- @spec round(num: Number): Integer
---- @since "1.40.0"
 --- @spec round(num: Number, places: Integer): Integer
 function m.round(num, places)
   if places and places > 0 then
@@ -150,7 +149,6 @@ function m.round(num, places)
   end
 end
 
---- @since "1.37.0"
 --- @spec sign(Number): Integer
 function m.sign(num)
   if num > 0 then

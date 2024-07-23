@@ -98,79 +98,79 @@ local RESET_ANSI_CODE = {
 ---   bg: ANSIColorName,
 --- }
 
---- @since "1.36.1"
+--- @since "0.1.0"
 --- @spec ansi_move_cursor_home(): String
 function m.ansi_move_cursor_home()
   return "\x1B[H"
 end
 
---- @since "1.36.1"
+--- @since "0.1.0"
 --- @spec ansi_move_cursor_up(lines: Integer): String
 function m.ansi_move_cursor_up(lines)
   return "\x1B[" .. lines .. "A"
 end
 
---- @since "1.36.1"
+--- @since "0.1.0"
 --- @spec ansi_move_cursor_down(lines: Integer): String
 function m.ansi_move_cursor_down(lines)
   return "\x1B[" .. lines .. "B"
 end
 
---- @since "1.36.1"
+--- @since "0.1.0"
 --- @spec ansi_move_cursor_right(columns: Integer): String
 function m.ansi_move_cursor_right(columns)
   return "\x1B[" .. columns .. "C"
 end
 
---- @since "1.36.1"
+--- @since "0.1.0"
 --- @spec ansi_move_cursor_left(columns: Integer): String
 function m.ansi_move_cursor_left(columns)
   return "\x1B[" .. columns .. "D"
 end
 
---- @since "1.36.1"
+--- @since "0.1.0"
 --- @spec ansi_move_cursor_to(line: Integer, column: Integer): String
 function m.ansi_move_cursor_to(line, column)
   return "\x1B[" .. line .. ";" .. column .. "H"
 end
 
---- @since "1.36.0"
+--- @since "0.1.0"
 --- @spec ansi_clear_line_trailing(): String
 function m.ansi_clear_line_trailing()
   return "\x1B[0K"
 end
 
---- @since "1.36.0"
+--- @since "0.1.0"
 --- @spec ansi_clear_line_leading(): String
 function m.ansi_clear_line_leading()
   return "\x1B[1K"
 end
 
---- @since "1.36.0"
+--- @since "0.1.0"
 --- @spec ansi_clear_line(): String
 function m.ansi_clear_line()
   return "\x1B[2K"
 end
 
---- @since "1.36.0"
+--- @since "0.1.0"
 --- @spec ansi_clear_screen_trailing(): String
 function m.ansi_clear_screen_trailing()
   return "\x1B[0J"
 end
 
---- @since "1.36.0"
+--- @since "0.1.0"
 --- @spec ansi_clear_screen_leading(): String
 function m.ansi_clear_screen_leading()
   return "\x1B[1J"
 end
 
---- @since "1.36.0"
+--- @since "0.1.0"
 --- @spec ansi_clear_screen(): String
 function m.ansi_clear_screen()
   return "\x1B[2J"
 end
 
---- @since "1.36.0"
+--- @since "0.1.0"
 --- @spec ansi_format_start(ANSIFormatOptions): String
 function m.ansi_format_start(options)
   local codes = {}
@@ -210,16 +210,22 @@ function m.ansi_format_start(options)
   return "\x1B[" .. table.concat(codes, ";") .. "m"
 end
 
---- @since "1.36.0"
+--- @since "0.1.0"
 --- @spec ansi_format_end(): String
 function m.ansi_format_end()
   return "\x1B[0m"
 end
 
---- @since "1.35.0"
+--- @since "0.1.0"
 --- @spec ansi_format(inner: String, options: ANSIFormatOptions): String
 function m.ansi_format(inner, options)
   return m.ansi_format_start(options) .. inner .. m.ansi_format_end()
+end
+
+--- @since "2024.7.23"
+--- @spec ansi_format_lazy(inner: Function/0, options: ANSIFormatOptions): String
+function m.ansi_format_lazy(callback, options)
+  return m.ansi_format_start(options) .. callback() .. m.ansi_format_end()
 end
 
 return m
