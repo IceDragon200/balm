@@ -1,5 +1,6 @@
 local Luna = require("balm/luna")
 local m = require("balm/s/data_matrix")
+local Vector3 = require("balm/m/vector/3")
 
 local case = Luna:new("balm.s.DataMatrix")
 
@@ -143,6 +144,51 @@ case:describe("#map/1", function (t2)
 
     for i = 1,s:volume() do
       t3:assert_eq(org.m_data[i] + 1, s.m_data[i])
+    end
+  end)
+end)
+
+case:describe("#blit_map/5", function (t2)
+  t2:test("can blit one matrix into callee matrix", function (t3)
+    local w, h, d = 5, 4, 3
+    local a = m:new(w, h, d, function (--[[ x, y, z, i ]])
+      return math.random()
+    end)
+
+    local b = m:new(w, h, d, function (--[[ x, y, z, i ]])
+      return math.random()
+    end)
+
+    local c = m:new(w, h * 2, d)
+
+    c:blit_map(Vector3.new(0, 0, 0), a, a:src_cube(), false, false)
+    c:blit_map(Vector3.new(0, a:height(), 0), b, b:src_cube(), function (
+      dx, dy, dz, di, dd,
+      sx, sy, sz, si, sd
+    )
+      -- print(dx, dy, dz, di, dd)
+      -- print(sx, sy, sz, si, sd)
+      t3:assert_eq("number", type(dx))
+      t3:assert_eq("number", type(dy))
+      t3:assert_eq("number", type(dz))
+      t3:assert_eq("number", type(di))
+      t3:assert_eq(nil, dd, "should be nil")
+
+      t3:assert_eq("number", type(sx))
+      t3:assert_eq("number", type(sy))
+      t3:assert_eq("number", type(sz))
+      t3:assert_eq("number", type(si))
+      t3:assert(sd, "should not be nil, as the data should exist")
+      return sd
+    end, false)
+
+    for z = 0,d-1 do
+      for y = 0,h-1 do
+        for x = 0,w-1 do
+          t3:assert_eq(a:get(x, y, z), c:get(x, y, z))
+          t3:assert_eq(b:get(x, y, z), c:get(x, y + a:height(), z))
+        end
+      end
     end
   end)
 end)

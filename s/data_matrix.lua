@@ -1,5 +1,6 @@
 local Object = require("balm/object")
 local Vector3 = require("balm/m/vector/3")
+local Cuboid = require("balm/m/cuboid")
 
 --- @namespace balm.s
 
@@ -14,9 +15,9 @@ local DataMatrix = Object:extends("balm.DataMatrix")
 do
   local ic = DataMatrix.instance_class
 
-  --- @spec #initialize(w: Integer, h: Integer, d: Integer, callback: Function): void
+  --- @spec #initialize(w: Integer, h: Integer, d: Integer, fun: Function): void
   --- @spec #initialize(w: Integer, h: Integer, d: Integer, default: T): void
-  function ic:initialize(w, h, d, default_or_callback)
+  function ic:initialize(w, h, d, default_or_fun)
     ic._super.initialize(self)
 
     self.m_w = math.floor(w)
@@ -26,12 +27,12 @@ do
     self.m_data = nil
 
     self:_validate_declared_size()
-    self:_initialize_data(default_or_callback)
+    self:_initialize_data(default_or_fun)
   end
 
   --- Initializes the target data matrix from another matrix.
   ---
-  --- @mutative
+  --- @mutative self
   --- @spec #initialize_copy(other: DataMatrix): void
   function ic:initialize_copy(other)
     self.m_w = other.m_w
@@ -63,20 +64,20 @@ do
     self.m_volume = self.m_w * self.m_h * self.m_d
   end
 
-  function ic:_initialize_data(default_or_callback)
-    if default_or_callback == nil then
+  function ic:_initialize_data(default_or_fun)
+    if default_or_fun == nil then
       self.m_data = {}
-    elseif type(default_or_callback) == "function" then
-      self:_initialize_data_with_function(default_or_callback)
+    elseif type(default_or_fun) == "function" then
+      self:_initialize_data_with_function(default_or_fun)
     else
-      self:_initialize_data_with_default(default_or_callback)
+      self:_initialize_data_with_default(default_or_fun)
     end
   end
 
   --- @spec #_initialize_data_with_function(Function/4): void
-  function ic:_initialize_data_with_function(callback)
+  function ic:_initialize_data_with_function(fun)
     self.m_data = {}
-    self:fill_lazy(callback)
+    self:fill_lazy(fun)
   end
 
   --- @spec #_initialize_data_with_default(Any): void
@@ -118,6 +119,21 @@ do
     return Vector3.new(self.m_w, self.m_h, self.m_d)
   end
 
+  --- Helper function for quickly generating the `src_cube` from a
+  --- data matrix for use in `blit` functions.
+  ---
+  --- @spec #src_cube(): Cuboid
+  function ic:src_cube()
+    return Cuboid.new(
+      0,
+      0,
+      0,
+      self.m_w,
+      self.m_h,
+      self.m_d
+    )
+  end
+
   --- Reports the size in cells of the data matrix
   ---
   --- @spec #volume(): Integer
@@ -125,7 +141,7 @@ do
     return self.m_volume
   end
 
-  --- @mutative
+  --- @mutative self
   --- @spec #fill(T): void
   function ic:fill(value)
     for i1 = 1,self.m_volume do
@@ -174,15 +190,15 @@ do
     return true
   end
 
-  --- @mutative
+  --- @mutative self
   --- @spec #fill_lazy(Function/4): void
-  function ic:fill_lazy(callback)
+  function ic:fill_lazy(fun)
     local x
     local y
     local z
     for i1 = 1,self.m_volume do
       x, y, z = self:index_to_xyz(i1)
-      self.m_data[i1] = callback(x, y, z, i1 - 1)
+      self.m_data[i1] = fun(x, y, z, i1 - 1)
     end
   end
 
@@ -214,7 +230,7 @@ do
 
   --- Put a value at specified xyz coordinates
   ---
-  --- @mutative
+  --- @mutative self
   --- @spec #put(
   ---   x: Integer,
   ---   y: Integer,
@@ -238,7 +254,7 @@ do
 
   --- Put a value at specified xyz coordinates
   ---
-  --- @mutative
+  --- @mutative self
   --- @spec #put_lazy(
   ---   x: Integer,
   ---   y: Integer,
@@ -246,7 +262,7 @@ do
   ---   value: Function/4 => T,
   ---   is_wrapped: Boolean
   --- ): void
-  function ic:put_lazy(x, y, z, callback, is_wrapped)
+  function ic:put_lazy(x, y, z, fun, is_wrapped)
     if is_wrapped then
       x, y, z = self:wrap_coords(x, y, z)
     end
@@ -254,7 +270,7 @@ do
     local ok, err = self:test_bounds(x, y, z)
     if ok then
       local i1 = self:xyz_to_index(x, y, z)
-      self.m_data[i1] = callback(x, y, z, i1 - 1)
+      self.m_data[i1] = fun(x, y, z, i1 - 1)
     else
       error(err)
     end
@@ -324,45 +340,116 @@ do
     return res
   end
 
-  --- @spec #reduce(acc: Any, callback: Function/6 => Any): Any
-  function ic:reduce(acc, callback)
+  --- @spec #reduce(acc: Any, fun: Function/6 => Any): Any
+  function ic:reduce(acc, fun)
     local i1
     for z = 0,self.m_d-1 do
       for y = 0,self.m_h-1 do
         for x = 0,self.m_w-1 do
           i1 = self:xyz_to_index(x, y, z)
-          callback(x, y, z, i1 - 1, self.m_data[i1], acc)
+          fun(x, y, z, i1 - 1, self.m_data[i1], acc)
         end
       end
     end
     return acc
   end
 
-  --- @spec #each(acc: Any, callback: Function/5): self
-  function ic:each(callback)
+  --- @spec #each(acc: Any, fun: Function/5): self
+  function ic:each(fun)
     self:reduce(0, function (x, y, z, i, d, c)
-      callback(x, y, z, i, d)
+      fun(x, y, z, i, d)
       return c + 1
     end)
     return self
   end
 
-  --- Executes given callback over every cell in the matrix.
+  --- Executes given `fun` over every cell in the matrix.
   ---
-  --- @mutative
-  --- @spec #map(callback: Function/5): self
-  function ic:map(callback)
+  --- @mutative self
+  --- @spec #map(mapper: Function/5): self
+  function ic:map(fun)
     local i1
     for z = 0,self.m_d-1 do
       for y = 0,self.m_h-1 do
         for x = 0,self.m_w-1 do
           i1 = self:xyz_to_index(x, y, z)
-          self.m_data[i1] = callback(x, y, z, i1 - 1, self.m_data[i1])
+          self.m_data[i1] = fun(x, y, z, i1 - 1, self.m_data[i1])
         end
       end
     end
 
     return self
+  end
+
+  --- @mutative self
+  --- @spec #blit_map(
+  ---   pos: Vector3,
+  ---   other: DataMatrix,
+  ---   src_cube: Cuboid,
+  ---   mapper: Function/10,
+  ---   is_wrapped: Boolean
+  --- ): void
+  function ic:blit_map(pos, other, src_cube, mapper, is_wrapped)
+    local dx, dy, dz = pos.x, pos.y, pos.z
+    local sx, sy, sz = src_cube.x, src_cube.y, src_cube.z
+    local sw, sh, sd = src_cube.w, src_cube.h, src_cube.d
+    local sow, soh, sod = other.m_w, other.m_h, other.m_d
+    if is_wrapped then
+      dx, dy, dz = self:wrap_coords(dx, dy, dz)
+      sx, sy, sz = other:wrap_coords(sx, sy, sz)
+    end
+
+    local dcx, dcy, dcz
+    local scx, scy, scz
+    local si
+    local di
+    local should_map = mapper ~= false
+
+    for z = 0,sd-1 do
+      dcz = dz + z
+      scz = sz + z
+
+      if is_wrapped then
+        dcz = dcz % self.m_d
+        scz = scz % sod
+      end
+
+      for y = 0,sh-1 do
+        dcy = dy + y
+        scy = sy + y
+
+        if is_wrapped then
+          dcy = dcy % self.m_h
+          scy = scy % soh
+        end
+
+        for x = 0,sw-1 do
+          dcx = dx + x
+          scx = sx + x
+
+          if is_wrapped then
+            dcx = dcx % self.m_w
+            scx = scx % sow
+          end
+
+          di = dcz * self.m_h * self.m_w + dcy * self.m_w + dcx
+          si = scz * soh * sow + scy * sow + scx
+
+          if should_map then
+            self.m_data[di + 1] = mapper(
+              dcx, dcy, dcz,
+              di,
+              self.m_data[di + 1],
+              scx, scy, scz,
+              si,
+              other.m_data[si + 1]
+            )
+          else
+            self.m_data[di + 1] = other.m_data[si + 1]
+          end
+        end
+      end
+    end
   end
 end
 
