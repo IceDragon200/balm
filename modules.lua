@@ -1,9 +1,11 @@
 return {
   ansi = require("balm/m/ansi"),
+  assertions = require("balm/m/assertions"),
   cuboid = require("balm/m/cuboid"),
   easers = require("balm/m/easers"),
   list = require("balm/m/list"),
   number = require("balm/m/number"),
+  path = require("balm/m/path"),
   plot = require("balm/m/plot"),
   pretty_units = require("balm/m/pretty_units"),
   rect = require("balm/m/rect"),
