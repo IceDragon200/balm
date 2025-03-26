@@ -1,4 +1,3 @@
-local ByteBuf = require("balm/p/byte_buf")
 local Bytes = require("balm/p/bin_types/bytes")
 local BinSchema = require("balm/p/bin_schema")
 local StringBuffer = require("balm/u/string_buffer")
@@ -30,8 +29,10 @@ function ic:initialize(filename, initializer)
   self:load_table()
 end
 
+--- @spec #save_table(): self
 function ic:save_table()
   local buffer = StringBuffer:new("", "w")
+
   -- MMAP - Marshall Map
   local bytes_written, err = MMAPSchema:write(buffer, {
     magic = "MMAP",

@@ -1,4 +1,4 @@
-local ByteBuf = require("balm/p/byte_buf")
+local byte_buf = require("balm/p/byte_buf").LE
 local ScalarTypes = require("balm/p/bin_types/scalars")
 local tablem = require("balm/m/table")
 local Object = require("balm/object")
@@ -17,7 +17,7 @@ end
 function ic:write(file, data)
   local len = tablem.length(data)
   local all_bytes_written = 0
-  local bytes_written, err = ByteBuf.w_u32(file, len)
+  local bytes_written, err = byte_buf:w_u32(file, len)
   all_bytes_written = all_bytes_written + bytes_written
   if err then
     return all_bytes_written, err
@@ -38,7 +38,7 @@ function ic:write(file, data)
 end
 
 function ic:read(file)
-  local len, all_bytes_read = ByteBuf.r_u32(file)
+  local len, all_bytes_read = byte_buf:r_u32(file)
   if len then
     local result = {}
     for _ = 1,len do

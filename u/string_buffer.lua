@@ -138,6 +138,7 @@ do
     return string.sub(self.data, pos, pos + len - 1), len
   end
 
+  --- @spec #write(data: String): (Boolean, err: String)
   function ic:write(data)
     assert(self.mode == "w" or self.mode == "rw", "expected write mode")
     data = tostring(data)
