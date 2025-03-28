@@ -255,7 +255,7 @@ function Color.from_colorstring(colorstring)
 
     if idx then
       name = colorstring:sub(1, idx - 1)
-      alpha = hexpair_to_byte(colorstring:sub(idx, #colorstring))
+      alpha = hexpair_to_color_value(colorstring:sub(idx, #colorstring))
     end
 
     local color = Color.NAMED[name]
@@ -289,6 +289,7 @@ function Color.maybe_to_colorstring(value)
   end
 end
 
+--- @exception
 --- @spec maybe_to_color(value: String | Table | Color): Color
 function Color.maybe_to_color(value)
   if type(value) == "string" then
