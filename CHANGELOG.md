@@ -1,3 +1,7 @@
+# 2025.3.27
+
+* Added `balm.m.color`
+
 # 2024.7.23
 
 * Added `balm.m.ansi.ansi_format_lazy/2`

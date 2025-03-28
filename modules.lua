@@ -1,6 +1,7 @@
 return {
   ansi = require("balm/m/ansi"),
   assertions = require("balm/m/assertions"),
+  color = require("balm/m/color"),
   cuboid = require("balm/m/cuboid"),
   easers = require("balm/m/easers"),
   list = require("balm/m/list"),
