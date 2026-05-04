@@ -1,3 +1,7 @@
+# 2026.5.4
+
+* Added `balm.s.MinHeap` from foundation
+
 # 2025.3.27
 
 * Added `balm.m.color`
