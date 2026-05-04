@@ -670,7 +670,7 @@ do
       return nil, read_len, "read underflow"
     end
 
-    return ByteDecoder:d_iv(bytes, len)
+    return ByteDecoder.LE:d_iv(bytes, len)
   end
 
   -- @spec #r_uv(Stream, len: Integer): (result: Integer, bytes_read: Integer)
@@ -679,7 +679,7 @@ do
     if read_len < len then
       return nil, read_len, "read underflow"
     end
-    return ByteDecoder:d_uv(bytes, len)
+    return ByteDecoder.LE:d_uv(bytes, len)
   end
 end
 

@@ -1,6 +1,6 @@
 local listm = require("balm/m/list")
 -- local tablem = require("balm/m/table")
-local ByteBuf = require("balm/p/byte_buf")
+local byte_buf = require("balm/p/byte_buf").LE
 local ArrayType = require("balm/p/bin_types/array")
 local MapType = require("balm/p/bin_types/map")
 local ScalarTypes = require("balm/p/bin_types/scalars")
@@ -91,7 +91,7 @@ do
     end)
   end
 
-  -- @spec #size(): Integer
+  --- @spec #size(): Integer
   function ic:size()
     return listm.reduce(self.m_definition, 0, function (block, current_size)
       -- Padding
@@ -107,11 +107,13 @@ do
     end)
   end
 
+  --- @spec #write(Buffer, data: Any): (bytes_written: Integer, err: String)
   function ic:write(file, data)
+    assert(file, "expected file")
     return listm.reduce(self.definition, 0, function (block, all_bytes_written)
       if block.type == 0 then
         for _ = 1,block.length do
-          local bytes_written, err = ByteBuf.w_u8(file, 0)
+          local bytes_written, err = byte_buf:w_u8(file, 0)
           all_bytes_written = all_bytes_written + bytes_written
           if err then
             error(err)
@@ -133,7 +135,7 @@ do
     target = target or {}
     return target, listm.reduce(self.definition, 0, function (block, all_bytes_read)
       if block.type == 0 then
-        local _, bytes_read = ByteBuf.read(file, block.length)
+        local _, bytes_read = byte_buf:read(file, block.length)
         all_bytes_read = all_bytes_read + bytes_read
       else
         print("BinSchema", "reading field", block.name)

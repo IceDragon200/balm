@@ -1,6 +1,7 @@
 require("balm/tests/m/list_test")
 require("balm/tests/m/matrix/3x3_test")
 require("balm/tests/m/matrix/4x4_test")
+require("balm/tests/m/path_test")
 require("balm/tests/m/plot_test")
 require("balm/tests/m/rect_test")
 require("balm/tests/m/cuboid_test")

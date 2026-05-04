@@ -1,4 +1,4 @@
-local ByteBuf = require("balm/p/byte_buf")
+local byte_buf = require("balm/p/byte_buf").LE
 local Object = require("balm/object")
 
 --[[
@@ -20,12 +20,12 @@ end
 function ic:write_integer(file, data)
   -- integer, only integers are supported.
   local all_bytes_written = 0
-  local bytes_written, err = ByteBuf.write(file, "I")
+  local bytes_written, err = byte_buf:write(file, "I")
   all_bytes_written = all_bytes_written + bytes_written
   if err then
     return all_bytes_written, err
   end
-  local bytes_written, err = ByteBuf.w_i32(file, data)
+  local bytes_written, err = byte_buf:w_i32(file, data)
   all_bytes_written = all_bytes_written + bytes_written
   return all_bytes_written, err
 end
@@ -33,12 +33,12 @@ end
 function ic:write_float(file, data)
   -- because I'm awful at figuring out the IEEE standard, just stringify the float.
   local all_bytes_written = 0
-  local bytes_written, err = ByteBuf.write(file, "f")
+  local bytes_written, err = byte_buf:write(file, "f")
   all_bytes_written = all_bytes_written + bytes_written
   if err then
     return all_bytes_written, err
   end
-  local bytes_written, err = ByteBuf.w_u8string(file, tostring(data))
+  local bytes_written, err = byte_buf:w_u8string(file, tostring(data))
   all_bytes_written = all_bytes_written + bytes_written
   return all_bytes_written, err
 end
@@ -46,24 +46,24 @@ end
 function ic:write_string(file, data)
   -- String
   local all_bytes_written = 0
-  local bytes_written, err = ByteBuf.write(file, "Q")
+  local bytes_written, err = byte_buf:write(file, "Q")
   all_bytes_written = all_bytes_written + bytes_written
   if err then
     return all_bytes_written, err
   end
-  local bytes_written, err = ByteBuf.w_u32string(file, data)
+  local bytes_written, err = byte_buf:w_u32string(file, data)
   all_bytes_written = all_bytes_written + bytes_written
   return all_bytes_written, err
 end
 
 function ic:write_boolean(file, data)
   local all_bytes_written = 0
-  local bytes_written, err = ByteBuf.write(file, "B")
+  local bytes_written, err = byte_buf:write(file, "B")
   all_bytes_written = all_bytes_written + bytes_written
   if err then
     return all_bytes_written, err
   end
-  local bytes_written, err = ByteBuf.w_u8bool(file, data)
+  local bytes_written, err = byte_buf:w_u8bool(file, data)
   all_bytes_written = all_bytes_written + bytes_written
   return all_bytes_written, err
 end
@@ -72,7 +72,7 @@ function ic:write_table(file, data)
   local all_bytes_written = 0
 
   -- Write value identifier
-  local bytes_written, err = ByteBuf.write(file, "T")
+  local bytes_written, err = byte_buf:write(file, "T")
   all_bytes_written = all_bytes_written + bytes_written
 
   if err then
@@ -86,7 +86,7 @@ function ic:write_table(file, data)
   end
 
   -- Write its length
-  local bytes_written, err = ByteBuf.w_i32(file, len)
+  local bytes_written, err = byte_buf:w_i32(file, len)
   all_bytes_written = all_bytes_written + bytes_written
 
   if err then
@@ -115,7 +115,7 @@ end
 function ic:write(file, data)
   local all_bytes_written = 0
   if type(data) == "nil" then
-    return ByteBuf.write(file, "0")
+    return byte_buf:write(file, "0")
   elseif type(data) == "number" then
     if math.floor(data) == data then
       return self:write_integer(file, data)
@@ -138,7 +138,7 @@ function ic:do_read_table(file)
   local result = {}
   local all_bytes_read = 0
 
-  local num_pairs = ByteBuf.r_i32(file)
+  local num_pairs = byte_buf:r_i32(file)
 
   for i = 1,num_pairs do
     local key, bytes_read = self:read(file)
@@ -155,21 +155,21 @@ end
 
 function ic:read(file)
   local all_bytes_read = 0
-  local type_code, bytes_read = ByteBuf.read(file, 1)
+  local type_code, bytes_read = byte_buf:read(file, 1)
   all_bytes_read = all_bytes_read + bytes_read
   if type_code == "0" then
     return nil, all_bytes_read
   elseif type_code == "f" then
-    local value, bytes_read = ByteBuf.r_u8string(file)
+    local value, bytes_read = byte_buf:r_u8string(file)
     return tonumber(value), all_bytes_read + bytes_read
   elseif type_code == "I" then
-    local value, bytes_read = ByteBuf.r_i32(file)
+    local value, bytes_read = byte_buf:r_i32(file)
     return value, all_bytes_read + bytes_read
   elseif type_code == "Q" then
-    local value, bytes_read = ByteBuf.r_u32string(file)
+    local value, bytes_read = byte_buf:r_u32string(file)
     return value, all_bytes_read + bytes_read
   elseif type_code == "B" then
-    local value, bytes_read = ByteBuf.r_u8bool(file)
+    local value, bytes_read = byte_buf:r_u8bool(file)
     return value, all_bytes_read + bytes_read
   elseif type_code == "T" then
     local value, bytes_read = self:do_read_table(file)
