@@ -1,6 +1,7 @@
 # 2026.5.4
 
 * Added `balm.s.MinHeap` from foundation
+* Added `balm.Object#copy/0` This means objects have a copy method by default now, objects are expected to override the `initialize_copy/1` method to add their own copy logic for their fields.
 
 # 2025.3.27
 

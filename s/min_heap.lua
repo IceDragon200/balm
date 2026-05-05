@@ -22,18 +22,10 @@ do
   ---
   --- @spec #initialize_copy(other: MinHeap): void
   function ic:initialize_copy(other)
+    ic._super.initialize_copy(self, other)
     self.m_data = table_copy(other.m_data)
     self.m_weights = table_copy(other.m_weights)
     self.m_cursor = other.m_cursor
-  end
-
-  --- Returns a copy of the heap
-  ---
-  --- @spec #copy(): MinHeap<T>
-  function ic:copy()
-    local other = self._class:alloc()
-    other:initialize_copy(self)
-    return other
   end
 
   --- Returns the underlying data as is, this can be used to effectively unwrap

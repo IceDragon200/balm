@@ -90,17 +90,9 @@ end
 ---
 --- @spec #initialize_copy(other: List): void
 function ic:initialize_copy(other)
+  ic._super.initialize_copy(self, other)
   self.m_data = table_copy(other.m_data)
   self.m_cursor = other.m_cursor
-end
-
---- Returns a copy of the list
----
---- @spec #copy(): List<T>
-function ic:copy()
-  local list = self._class:alloc()
-  list:initialize_copy(self)
-  return list
 end
 
 --- Returns the underlying data as is, this can be used to effectively unwrap

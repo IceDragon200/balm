@@ -1,5 +1,4 @@
 local Luna = require("balm/luna")
-local m = require("balm/s/list")
 local m = require("balm/s/min_heap")
 
 local case = Luna:new("balm.MinHeap")
