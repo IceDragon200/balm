@@ -5,6 +5,9 @@
   * Added `balm.m.object.construct_record/2` for constructing a record of objects from a table
 * Added `balm.m.vector2.to_hash/2`
 * Added `balm.m.vector2.from_hash/3`
+* Added `balm.m.vector2.negate/2`
+* Added `balm.m.vector2.relative/2`
+* Added `Luna#assert_matches/3`
 
 # 2026.5.4
 

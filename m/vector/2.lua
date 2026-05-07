@@ -3,6 +3,7 @@ local ceil = assert(math.ceil)
 local floor = assert(math.floor)
 local max = assert(math.max)
 local min = assert(math.min)
+local abs = assert(math.abs)
 local BIT_TABLE = assert(require("balm/u/bit").BIT_TABLE)
 
 --- @namespace balm.m.vector2
@@ -126,6 +127,15 @@ function m.round(dest, v2, places)
   return dest
 end
 
+--- @since "2026.5.7"
+--- @spec negate(dest: Vector2, v2: Vector2): Vector2
+function m.negate(dest, v2)
+  local x, y = m.unwrap(v2)
+  dest.x = -x
+  dest.y = -y
+  return dest
+end
+
 --- @spec dot(Vector2, Vector2): Vector2
 function m.dot(v1, v2)
   return v1.x * v2.x + v1.y * v2.y
@@ -138,6 +148,18 @@ function m.normalize(dest, v1)
   local x, y = m.unwrap(v1)
   local len = math.sqrt(x * x + y * y)
   return m.divide(dest, v1, len)
+end
+
+--- @since "2026.5.7"
+--- @spec #relative(dest: Vector2, v1: Vector2): Vector2
+function m.relative(dest, v1)
+  local x, y = m.unwrap(v1)
+  local d = min(abs(x), abs(y))
+  if d > 0 then
+    dest.x = dest.x / d
+    dest.y = dest.y / d
+  end
+  return dest
 end
 
 --- @spec add(dest: Vector2, Vector2, Vector2): Vector2
