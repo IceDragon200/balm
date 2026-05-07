@@ -6,6 +6,7 @@ return {
   easers = require("balm/m/easers"),
   list = require("balm/m/list"),
   number = require("balm/m/number"),
+  object = require("balm/m/object"),
   path = require("balm/m/path"),
   plot = require("balm/m/plot"),
   pretty_units = require("balm/m/pretty_units"),

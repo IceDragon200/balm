@@ -32,6 +32,7 @@ do
   --- Initializes the properties of a new object, note this is not called for copied objects
   --- see #initialize_copy/1 instead.
   ---
+  --- @overridable
   --- @spec #initialize(...): void
   function ic:initialize()
     --
@@ -40,6 +41,7 @@ do
   --- Called when an object is to be copied, the `other` will be the original object that is being
   --- copied.
   ---
+  --- @overridable
   --- @spec #initialize_copy(other: self): void
   function ic:initialize_copy(other)
     for key, value in pairs(other) do
@@ -156,6 +158,12 @@ function Object:new(...)
     instance:initialize(...)
   end
   return instance
+end
+
+--- @spec &tap(): Any
+function Object:tap(callback)
+  callback(self)
+  return self
 end
 
 --- Determines if the given object is some kind of instance class object.
