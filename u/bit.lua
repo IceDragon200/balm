@@ -1,8 +1,8 @@
---- @namespace balm.m.bit
+--- @namespace balm.u.bit
 --
 -- Balm bit module
 --
--- In case the ffi bit is available, then this module acts as a wrapper around it
+-- In case the ffi bit isn't available, then this module acts as a wrapper around it
 -- Otherwise it will try it's best to implement the module in plain lua.
 --
 local BITS = 32
