@@ -1,4 +1,9 @@
 local number_round = require("balm/m/number").round
+local ceil = assert(math.ceil)
+local floor = assert(math.floor)
+local max = assert(math.max)
+local min = assert(math.min)
+local BIT_TABLE = assert(require("balm/u/bit").BIT_TABLE)
 
 --- @namespace balm.m.vector2
 local xy = {"x", "y"}
@@ -96,16 +101,16 @@ end
 --- @spec floor(dest: Vector2, v2: Vector2): Vector2
 function m.floor(dest, v2)
   local v2x, v2y = m.unwrap(v2)
-  dest.x = math.floor(v2x)
-  dest.y = math.floor(v2y)
+  dest.x = floor(v2x)
+  dest.y = floor(v2y)
   return dest
 end
 
 --- @spec ceil(dest: Vector2, v2: Vector2): Vector2
 function m.ceil(dest, v2)
   local v2x, v2y = m.unwrap(v2)
-  dest.x = math.ceil(v2x)
-  dest.y = math.ceil(v2y)
+  dest.x = ceil(v2x)
+  dest.y = ceil(v2y)
   return dest
 end
 
@@ -176,8 +181,8 @@ function m.idivide(dest, v1, v2)
   local v1x, v1y = m.unwrap(v1)
   local v2x, v2y = m.unwrap(v2)
 
-  dest.x = math.floor(v1x / v2x)
-  dest.y = math.floor(v1y / v2y)
+  dest.x = floor(v1x / v2x)
+  dest.y = floor(v1y / v2y)
   return dest
 end
 
@@ -210,6 +215,32 @@ function m.slerp(dest, v1, v2, t)
   dest = m.multiply(dest, v1, math.cos(theta))
   tmp = m.multiply(tmp, tmp, math.sin(theta))
   return m.add(dest, dest, tmp)
+end
+
+--- @spec #to_hash(bits: Number): Number
+function m.to_hash(src, bits)
+  assert(bits > 1 and bits < 55)
+  assert(bits % 2 == 0)
+  local hb = floor(bits / 2)
+  local s = BIT_TABLE[hb - 1]
+  local sb = BIT_TABLE[hb]
+  local x = s + min(max(floor(src.x), -s), s - 1)
+  local y = s + min(max(floor(src.y), -s), s - 1)
+  return y * sb + x
+end
+
+--- @spec #from_hash(bits: Number, hash4: Number): Vector2
+function m.from_hash(dest, bits, hash)
+  assert(bits > 1 and bits < 55)
+  assert(bits % 2 == 0)
+  local hb = floor(bits / 2)
+  local s = BIT_TABLE[hb - 1]
+  local sb = BIT_TABLE[hb]
+  local x = floor(hash % sb) - s
+  local y = floor(floor(hash / sb) % sb) - s
+  dest.x = x
+  dest.y = y
+  return dest
 end
 
 --- Intended to be used by persistence systems to dump a vector2 to a plain table

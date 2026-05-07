@@ -110,6 +110,28 @@ case:describe(".slerp/4", function (t2)
   end)
 end)
 
+case:describe("hash", function (t2)
+  for x = 4,50 do
+    if x % 2 == 0 then
+      local s = math.pow(2, math.floor(x / 2) - 1)
+      local mx = s - 1
+      local mn = -s
+
+      t2:test("can convert a vector2 into a ".. x .." bit hash", function (t3)
+        t3:assert_table_eq({ x = mn, y = mn }, subject.from_hash({}, x, subject.to_hash(subject.new(mn, mn), x)))
+        t3:assert_table_eq({ x = mn, y = 0  }, subject.from_hash({}, x, subject.to_hash(subject.new(mn, 0), x)))
+        t3:assert_table_eq({ x = mn, y = mx }, subject.from_hash({}, x, subject.to_hash(subject.new(mn, mx), x)))
+        t3:assert_table_eq({ x = 0, y = mn  }, subject.from_hash({}, x, subject.to_hash(subject.new(0, mn), x)))
+        t3:assert_table_eq({ x = 0, y = 0   }, subject.from_hash({}, x, subject.to_hash(subject.new(0, 0), x)))
+        t3:assert_table_eq({ x = 0, y = mx  }, subject.from_hash({}, x, subject.to_hash(subject.new(0, mx), x)))
+        t3:assert_table_eq({ x = mx, y = mn }, subject.from_hash({}, x, subject.to_hash(subject.new(mx, mn), x)))
+        t3:assert_table_eq({ x = mx, y = 0  }, subject.from_hash({}, x, subject.to_hash(subject.new(mx, 0), x)))
+        t3:assert_table_eq({ x = mx, y = mx }, subject.from_hash({}, x, subject.to_hash(subject.new(mx, mx), x)))
+      end)
+    end
+  end
+end)
+
 case:describe("#-~", function (t2)
   t2:test("can negate a vector", function (t3)
     local a = subject.new(2, -4)

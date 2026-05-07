@@ -54,7 +54,7 @@ local UHEX_TABLE = {
 -- Maps the bit position to the power of 2
 local BIT_TABLE = {}
 
-for i = 0,BITS do
+for i = 0,54 do
   BIT_TABLE[i] = math.floor(math.pow(2, i))
 end
 
@@ -313,6 +313,7 @@ local function bswap(x)
 end
 
 return {
+  BIT_TABLE = BIT_TABLE,
   tohex = tohex,
   arshift = arshift,
   band = band,
