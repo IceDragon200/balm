@@ -9,6 +9,7 @@
 * Added `balm.m.vector2.relative/2`
 * Added `Luna#assert_matches/3`
 * Added `balm.m.rect.is_rect_like/1`
+* Added `balm.u.Quadmap`, based on my older "Grid" helper class
 
 # 2026.5.4
 
