@@ -647,6 +647,7 @@ end
 function ic:sort()
   if self.m_cursor > 0 then
     local size = self.m_cursor
+    local list = self.m_data
     local a
     local b
 
@@ -671,6 +672,7 @@ end
 function ic:sort_by(callback)
   if self.m_cursor > 0 then
     local size = self.m_cursor
+    local list = self.m_data
     local a
     local b
     local weights = {}
