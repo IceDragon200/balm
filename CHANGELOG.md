@@ -8,6 +8,7 @@
 * Added `balm.m.vector2.negate/2`
 * Added `balm.m.vector2.relative/2`
 * Added `Luna#assert_matches/3`
+* Added `balm.m.rect.is_rect_like/1`
 
 # 2026.5.4
 

@@ -1,4 +1,6 @@
+local assertions = require("balm/m/assertions")
 local Rect = require("balm/m/rect")
+local inspect = require("balm/m/value").inspect
 
 local WindowSkin = {}
 
@@ -366,6 +368,11 @@ end
 Expects an even spaced tileset to create the window from
 ]]
 function WindowSkin.create_from_3x3(sprite_batch, target_rect, src_rect, _unsued, options)
+  assert(Rect.is_rect_like(target_rect), "expected a rect for target_rect")
+  if not Rect.is_rect_like(src_rect) then
+    error("expected a rect for src_rect (got " .. inspect(src_rect) .. ")")
+  end
+
   options = options or {}
   -- Allows disabling specific directions on the skin
   -- For example if the right side (i.e. 6) is disabled, then the inner body will repeat to the end instead of capping.
@@ -423,7 +430,7 @@ function WindowSkin.create_from_3x3(sprite_batch, target_rect, src_rect, _unsued
 
   --print("LEW", lew, "REW", rew, "TEH", teh, "BEH", beh, "REXO", rexo, "BEYO", beyo, "INNER COLS", inner_cols, "INNER ROWS", inner_rows)
 
-  local nq = love.graphics.newQuad
+  local nq = assert(love.graphics.newQuad)
   -- 789
   -- 456
   -- 123
@@ -546,6 +553,10 @@ function WindowSkin.create_from_3x3(sprite_batch, target_rect, src_rect, _unsued
 end
 
 function WindowSkin.create_from_layout(sprite_batch, target_rect, layout, src_rect, thickness, options)
+  assertions.is_table(target_rect)
+  assertions.is_string(layout)
+  assertions.is_table(src_rect)
+
   local func = nil
   if layout == "1x1" then
     func = WindowSkin.repeat_fill

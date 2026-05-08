@@ -7,6 +7,18 @@ local number_round = require("balm/m/number").round
 --
 local Rect = {}
 
+--- @since "2026.5.7"
+--- @spec is_rect_like(obj: Any1: Boolean)
+function Rect.is_rect_like(obj)
+  if type(obj) == "table" then
+    if type(obj.x) == "number" and type(obj.y) == "number"
+       and type(obj.w) == "number" and type(obj.h) == "number" then
+      return true
+    end
+  end
+  return false
+end
+
 --- Create a new rectangle with all 4 components specified
 ---
 --- @spec new(x?: Number, y?: Number, w?: Number, h?: Number): Rect
