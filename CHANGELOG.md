@@ -10,6 +10,8 @@
 * Added `Luna#assert_matches/3`
 * Added `balm.m.rect.is_rect_like/1`
 * Added `balm.u.Quadmap`, based on my older "Grid" helper class
+* Added `balm.s.List#sort/0`
+* Added `balm.s.List#sort_by/1`
 
 # 2026.5.4
 

@@ -642,4 +642,63 @@ function ic:bsearch(a)
   end)
 end
 
+--- @since "2026.5.7"
+--- @spec #sort(): self
+function ic:sort()
+  if self.m_cursor > 0 then
+    local size = self.m_cursor
+    local a
+    local b
+
+    for i = 1,size do
+      a = list[i]
+      for j = i,size do
+        b = list[j]
+
+        if a > b then
+          list[i] = b
+          list[j] = a
+          a = b
+        end
+      end
+    end
+  end
+  return self
+end
+
+--- @since "2026.5.7"
+--- @spec #sort_by(callback): self
+function ic:sort_by(callback)
+  if self.m_cursor > 0 then
+    local size = self.m_cursor
+    local a
+    local b
+    local weights = {}
+    local tmp
+    local tmp2
+
+    for i = 1,size do
+      weights[i] = callback(list[i], i)
+    end
+
+    for i = 1,size do
+      a = weights[i]
+      for j = i,size do
+        b = weights[j]
+
+        if a > b then
+          tmp = list[i]
+          list[i] = list[j]
+          list[j] = tmp
+          tmp2 = weights[i]
+          weights[i] = weights[j]
+          weights[j] = tmp2
+          a = b
+        end
+      end
+    end
+  end
+  return self
+end
+
 return List
