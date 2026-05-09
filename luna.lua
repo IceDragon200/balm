@@ -433,6 +433,26 @@ do
            "  right: " .. self:neat_dump(b)
   end
 
+  --- @since "2026.5.9"
+  --- @spec #assert_raw_eq(a: Any, b: Any, message: String): void
+  function ic:assert_raw_eq(a, b, message)
+    message = message or function ()
+      return ("expected to be rawequal to:\n\t left: " .. self:neat_dump(a) ..
+              "\n\tright: " .. self:neat_dump(b))
+    end
+    self:assert(rawequal(a, b), message)
+  end
+
+  --- @since "2026.5.9"
+  --- @spec #assert_raw_neq(a: Any, b: Any, message: String): void
+  function ic:assert_raw_neq(a, b, message)
+    message = message or function ()
+      return ("expected to not be rawequal to:\n\t left: " .. self:neat_dump(a) ..
+              "\n\tright: " .. self:neat_dump(b))
+    end
+    self:assert(not rawequal(a, b), message)
+  end
+
   function ic:assert_eq(a, b, message)
     message = message or function ()
       return ("expected to be equal to:\n\t left: " .. self:neat_dump(a) ..
@@ -501,11 +521,34 @@ do
     return truth_value
   end
 
+  --- @since "2026.5.9"
+  function ic:refute_raw_eq(a, b, message)
+    message = message or function ()
+      return ("expected " .. self:neat_dump(a) .. " to not be rawequal to " .. self:neat_dump(b))
+    end
+    self:refute(rawequal(a, b), message)
+  end
+
+  --- @since "2026.5.9"
+  function ic:refute_raw_neq(a, b, message)
+    message = message or function ()
+      return ("expected " .. self:neat_dump(a) .. " to not be rawequal to " .. self:neat_dump(b))
+    end
+    self:refute(not rawequal(a, b), message)
+  end
+
   function ic:refute_eq(a, b, message)
     message = message or function ()
       return ("expected " .. self:neat_dump(a) .. " to not be equal to " .. self:neat_dump(b))
     end
     self:refute(a == b, message)
+  end
+
+  function ic:refute_neq(a, b, message)
+    message = message or function ()
+      return ("expected " .. self:neat_dump(a) .. " to not be equal to " .. self:neat_dump(b))
+    end
+    self:refute(a ~= b, message)
   end
 
   --- @since "2026.5.7"

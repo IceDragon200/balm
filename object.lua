@@ -1,5 +1,30 @@
 --- @namespace balm
+local Value = require("balm/m/value")
+local rawmatches = assert(Value.rawmatches)
+local inspect = assert(Value.inspect)
 local setmetatable = setmetatable
+
+local inherited_metamethods = {
+  "__tostring",
+  -- Math
+  "__add",
+  "__sub",
+  "__mul",
+  "__div",
+  "__unm",
+  "__mod",
+  "__pow",
+  "__idiv", -- 5.3
+  -- Logical Operators
+  "__eq",
+  "__lt",
+  "__gt",
+  -- Misc
+  "__concat",
+  "__len",
+  -- Invocation
+  "__call",
+}
 
 --- @class Object
 local Object = {
@@ -15,19 +40,53 @@ local Object = {
 
 setmetatable(Object, Object.__mt)
 
-function Object.__mt:__tostring()
-  return "Class<" .. self._name .. ">"
-end
-
-function Object.__imt:__tostring()
-  return self._class._name .. ":" .. self.__id
-end
-
 Object.instance_class._class = Object
 Object.__imt.__index = Object.instance_class
 
+--- @since "2026.5.9"
+local function default_inspect(self, ctx)
+  return string.format("#<%s:%p %s>", self._class._name, self, inspect(self, ctx, true))
+end
+
+--- @since "2026.5.9"
+local function default_class_to_string(self)
+  return string.format("Class<%s:%p>", self._name, self)
+end
+
+--- @since "2026.5.9"
+local function default_instance_to_string(self)
+  return string.format("#<%s:%p>", self._class._name, self)
+end
+
+do
+  --- @since "2026.5.9"
+  --- @spec &%__tostring(): String
+  Object.__mt.__tostring = default_class_to_string
+
+  --- @since "2026.5.9"
+  --- @spec %__tostring(): String
+  function Object.__imt:__tostring()
+    if type(self.__tostring) == "function" then
+      return self:__tostring()
+    elseif type(self.to_string) == "function" then
+      return self:to_string()
+    end
+    return default_instance_to_string(self)
+  end
+
+  --- @since "2026.5.9"
+  --- @spec %__eq(): Boolean
+  function Object.__imt:__eq(other)
+    if type(self.equals) == "function" then
+      return self:equals(other)
+    end
+    return false
+  end
+end
+
 do
   local ic = Object.instance_class
+
 
   --- Initializes the properties of a new object, note this is not called for copied objects
   --- see #initialize_copy/1 instead.
@@ -58,11 +117,41 @@ do
     return other
   end
 
+  --- Compares two objects and attempts a simple equality test.
+  --- This is just a least effort equality check and can be incorrect.
+  --- When in doubt, override this function yourself.
+  --- @overridable
+  --- @spec #equals(other): Boolean
+  function ic:equals(other)
+    if rawequal(self, other) then
+      return true
+    end
+    if Object.is_object(other, self._class) then
+      for key, value in pairs(other) do
+        if self[key] ~= value then
+          return false
+        end
+      end
+      return true
+    end
+    return false
+  end
+
+  --- Compares two objects and attempts a simple equality test.
+  --- This is just a least effort equality check and can be incorrect.
+  --- When in doubt, override this function yourself.
+  --- @overridable
+  --- @spec #matches(pattern): Boolean
+  ic.matches = rawmatches
+
   --- Helper function for returning the object as a string
   --- Reports the class name by default, can be overriden
-  function ic:to_string()
-    return self._class._name
-  end
+  --- @since "2026.5.9"
+  --- @spec #to_string(): String
+  ic.to_string = default_instance_to_string
+
+  --- @spec #inspect(): String
+  ic.inspect = default_inspect
 
   --- Invokes callback and passes self as the first argument
   ---
@@ -125,17 +214,24 @@ end
 --- @spec &extends(String): Object
 function Object.extends(super_class, name)
   local klass = {
+    _name = name,
     _super = super_class,
     __mt = {},
     __imt = {},
-    name = name,
     instance_class = {},
   }
 
   klass.instance_class._super = super_class.instance_class
   klass.instance_class._class = klass
 
+  for _, mm in ipairs(inherited_metamethods) do
+    rawset(klass.__mt, mm, rawget(super_class.__mt, mm))
+  end
   klass.__mt.__index = super_class
+
+  for _, mm in ipairs(inherited_metamethods) do
+    rawset(klass.__imt, mm, rawget(super_class.__imt, mm))
+  end
   klass.__imt.__index = klass.instance_class
 
   setmetatable(klass, klass.__mt)

@@ -1,3 +1,26 @@
+# 2026.5.9
+
+* Rewrote `balm.m.value.inspect/1`
+* Added `balm.m.value.matches/2` function for pattern matching
+* Added `balm.m.value.rawmatches/2` function for pattern matching
+
+## Object
+
+* General improvement to object inspection, string and meta method passing
+* Added `#equals/1`
+* Added `#matches/1`
+* Added `#inspect/0`
+* `Object:extends/1` now copies meta methods to child class, note this is not typical prototype or meta inheritance, a class gets a copy of its parent's meta tables AT the time of extension.
+* `Object#to_string/0` is now used by the metamethod `__tostring/0`
+
+## Luna
+
+* Added `#assert_raw_eq/3`
+* Added `#assert_raw_neq/3`
+* Added `#refute_raw_eq/3`
+* Added `#refute_raw_neq/3`
+* Added `#refute_neq/3`
+
 # 2026.5.7
 
 * Added `balm.m.object` module for additional object helper functions
