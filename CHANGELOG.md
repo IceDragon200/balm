@@ -3,6 +3,7 @@
 * Ported `IDGenerator` from project
 * Ported `RecordTable` from project
 * Ported `Properties` from project
+* Added `balm.s.List#shuffle/0` to shuffle the values in a list
 
 # 2026.5.9
 

@@ -1,7 +1,11 @@
---- @namespace balm.s.List
+local min = math.min
+local random = math.random
+local floor = math.floor
 
 local Object = require("balm/object")
 local table_copy = require("balm/m/table").copy
+
+--- @namespace balm.s.List
 
 --- @type ListCastable<T>: {
 ---   #to_list: Function/0 => T,
@@ -116,7 +120,7 @@ end
 function ic:reverse()
   -- check if there is more than 1 item in the list to reverse it
   if self.m_cursor > 1 then
-    local half = math.floor(self.m_cursor / 2)
+    local half = floor(self.m_cursor / 2)
     local tmp
     local x2
 
@@ -125,6 +129,24 @@ function ic:reverse()
       tmp = self.m_data[x2]
       self.m_data[x2] = self.m_data[x]
       self.m_data[x] = tmp
+    end
+  end
+  return self
+end
+
+--- Randomizes the position of the data within the list.
+---
+--- @since "2026.5.14"
+--- @spec #shuffle(): self
+function ic:shuffle()
+  -- check if there is more than 1 item in the list to shuffle it
+  if self.m_cursor > 1 then
+    local x2
+    for x = 1,self.m_cursor do
+      x2 = random(self.m_cursor)
+      if x ~= x2 then
+        self.m_data[x], self.m_data[x2] = self.m_data[x2], self.m_data[x]
+      end
     end
   end
   return self
@@ -277,7 +299,7 @@ function ic:shift(len)
     local result = {}
 
     if self.m_cursor > 0 then
-      len = math.min(self.m_cursor, len)
+      len = min(self.m_cursor, len)
       for x = 1,len do
         result[x] = self.m_data[x]
       end
@@ -334,7 +356,7 @@ function ic:pop(len)
   if len then
     local result = {}
     if self.m_cursor > 0 then
-      local start = 1 + self.m_cursor - math.min(len, self.m_cursor)
+      local start = 1 + self.m_cursor - min(len, self.m_cursor)
       local tail = self.m_cursor
       local i = 0
 
@@ -445,7 +467,7 @@ function ic:first(len)
   if len then
     local result = {}
     if self.m_cursor > 0 then
-      for i = 1,math.min(len, self.m_cursor) do
+      for i = 1,min(len, self.m_cursor) do
         result[i] = self.m_data[i]
       end
     end
@@ -463,7 +485,7 @@ function ic:last(len)
   if len then
     local result = {}
     if self.m_cursor > 0 then
-      local start = 1 + self.m_cursor - math.min(self.m_cursor, len)
+      local start = 1 + self.m_cursor - min(self.m_cursor, len)
       local i = 0
       for x = start,self.m_cursor do
         i = i + 1
@@ -481,7 +503,7 @@ end
 --- @spec #sample(): T | nil
 function ic:sample()
   if self.m_cursor > 0 then
-    return self.m_data[math.random(self.m_cursor)]
+    return self.m_data[random(self.m_cursor)]
   end
   return nil
 end
@@ -491,7 +513,7 @@ end
 --- @spec #pop_sample(): T | nil
 function ic:pop_sample()
   if self.m_cursor > 0 then
-    local pos = math.random(self.m_cursor)
+    local pos = random(self.m_cursor)
     return self:pop_at(pos)
   end
   return nil
@@ -606,7 +628,7 @@ function ic:bsearch_by(predicate)
     local elem
     local res
     while lo <= hi do
-      idx = lo + math.floor((hi - lo) / 2)
+      idx = lo + floor((hi - lo) / 2)
       elem = self.m_data[idx]
 
       res = predicate(elem, idx)
