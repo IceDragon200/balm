@@ -136,7 +136,7 @@ function m.negate(dest, v2)
   return dest
 end
 
---- @spec dot(Vector2, Vector2): Vector2
+--- @spec dot(Vector2, Vector2): Number
 function m.dot(v1, v2)
   return v1.x * v2.x + v1.y * v2.y
 end
