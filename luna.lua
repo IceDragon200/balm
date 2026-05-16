@@ -119,6 +119,10 @@ local function table_matches(a, pattern)
           sa[sai] = ea[key]
           sb[sbi] = value
         end
+      else
+        if ea ~= eb then
+          return false
+        end
       end
     else
       return false
