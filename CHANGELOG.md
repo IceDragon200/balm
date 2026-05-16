@@ -1,3 +1,8 @@
+# 2026.5.15
+
+* Ported `balm.s.WeightedList` from foundation (lua)
+* Ported `balm.s.Deque` from Maje (js)
+
 # 2026.5.14
 
 * Ported `IDGenerator` from project
