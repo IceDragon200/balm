@@ -1,9 +1,9 @@
 --[[
 
   Luna is a test framework to replace knife.test,
-  this has been extracted from my own personal project for use in minetest.
+  this has been extracted from my own personal project for use in minetest, and then balm.
 
-  You are free to copy and use this module/class
+  You are free to copy and use this module/class.
 
 ]]
 --- @namespace balm
