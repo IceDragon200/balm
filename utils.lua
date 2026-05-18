@@ -2,6 +2,7 @@ return {
   bit = require("balm/u/bit"),
   dir8 = require("balm/u/dir8"),
   IDGenerator = require("balm/u/id_generator"),
+  ID128Generator = require("balm/u/id128_generator"),
   NaiveDatetime = require("balm/u/naive_datetime"),
   Properties = require("balm/u/properties"),
   Quadmap = require("balm/u/quadmap"),

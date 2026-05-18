@@ -1,5 +1,6 @@
 local table_copy = assert(require("balm/m/table").copy)
 local Object = require("balm/object")
+local U128 = require("balm/u/u128")
 
 --- @class IDGenerator
 local IDGenerator = Object:extends("balm.u.IDGenerator")
@@ -10,12 +11,14 @@ do
   --- @spec #initialize(options: Table): void
   function ic:initialize(options)
     options = options or {}
-    self._super.initialize(self)
-    if self.x == false then
+    ic._super.initialize(self)
+    self.disabled = options.disabled
+    if self.disabled then
       self.x = false
     else
-      self.x = options.x or 0
+      self.x = self:init_x(options.x)
     end
+
     self.vanity = options.vanity and table_copy(options.vanity) or {}
     self.id_to_vanity = options.id_to_vanity and table_copy(options.id_to_vanity) or {}
 
@@ -25,6 +28,13 @@ do
     for id, vanity_id in pairs(self.id_to_vanity) do
       self.vanity[vanity_id] = id
     end
+  end
+
+  --- Initializes the accumulator, can be overriden by subclasses.
+  --- @overridable
+  --- @spec #init_x(x: Any): void
+  function ic:init_x(x)
+    return x or 0
   end
 
   --- Now normally, you shouldn't be copying an ID generator just make a new one.
@@ -39,17 +49,25 @@ do
 
   --- @spec #disable(): self
   function ic:disable()
+    self.disabled = true
     self.x = false
     return self
   end
 
   --- @spec #reset(): void
   function ic:reset()
-    if self.x ~= false then
-      self.x = 0
+    if self.disabled then
+      self.x = false
     end
     self.vanity = {}
     self.id_to_vanity = {}
+  end
+
+  --- Returns the next raw ID.
+  --- @spec #next_id(): ID
+  function ic:next_id()
+    self.x = self.x + 1
+    return self.x
   end
 
   --- Generates the next ID in sequence, optionally a vanity_id can be passed in to save the
@@ -61,14 +79,14 @@ do
         error("vanity id already exists")
       end
     end
-    if self.x == false then
-      error("cannot retrieve next id, as accumulator is disabled")
+    if self.disabled then
+      error("cannot retrieve next id, as generator is disabled")
     end
-    self.x = self.x + 1
+    local id = self:next_id()
     if vanity_id then
-      self:add_vanity(self.x, vanity_id)
+      self:add_vanity(id, vanity_id)
     end
-    return self.x
+    return id
   end
 
   --- @spec #add_vanity(id: ID, vanity_id: String): self
