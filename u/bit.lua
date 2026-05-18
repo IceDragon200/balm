@@ -1,3 +1,6 @@
+local table_freeze = assert(require("balm/m/table").freeze)
+local Limits = require("balm/limits")
+
 --- @namespace balm.u.bit
 --
 -- Balm bit module
@@ -6,12 +9,12 @@
 -- Otherwise it will try it's best to implement the module in plain lua.
 --
 local BITS = 32
-local UINT32_MAX = 0xFFFFFFFF
-local INT32_MAX = 0x7FFFFFFF
+local UINT32_MAX = Limits.UMAX[32]
+local INT32_MAX = Limits.IMAX[32]
 -- local INT32_MIN = -0x80000000
 
 -- Lowercase Hex Table
-local LHEX_TABLE = {
+local LHEX_TABLE = table_freeze({
   [0] = "0",
   [1] = "1",
   [2] = "2",
@@ -28,10 +31,10 @@ local LHEX_TABLE = {
   [13] = "d",
   [14] = "e",
   [15] = "f",
-}
+})
 
 -- Uppercase Hex Table
-local UHEX_TABLE = {
+local UHEX_TABLE = table_freeze({
   [0] = "0",
   [1] = "1",
   [2] = "2",
@@ -48,7 +51,7 @@ local UHEX_TABLE = {
   [13] = "D",
   [14] = "E",
   [15] = "F",
-}
+})
 
 -- Only 32 bit operations to mirror the luajit one
 -- Maps the bit position to the power of 2
@@ -57,6 +60,8 @@ local BIT_TABLE = {}
 for i = 0,54 do
   BIT_TABLE[i] = math.floor(math.pow(2, i))
 end
+
+table_freeze(BIT_TABLE)
 
 local function to_unsigned(result)
   if result < 0 then

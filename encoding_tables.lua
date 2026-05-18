@@ -1,9 +1,11 @@
+local table_freeze = assert(require("balm/m/table").freeze)
+
 --- @namespace balm
 
 local m = {}
 
 --- @const HEX_UPPERCASE_ENCODE_TABLE: { [Integer]: String }
-m.HEX_UPPERCASE_ENCODE_TABLE = {
+m.HEX_UPPERCASE_ENCODE_TABLE = table_freeze({
   [0] = "0",
   [1] = "1",
   [2] = "2",
@@ -20,7 +22,28 @@ m.HEX_UPPERCASE_ENCODE_TABLE = {
   [13] = "D",
   [14] = "E",
   [15] = "F",
-}
+})
+
+--- @since "2026.5.18"
+--- @const HEX_LOWERCASE_ENCODE_TABLE: { [Integer]: String }
+m.HEX_LOWERCASE_ENCODE_TABLE = table_freeze({
+  [0] = "0",
+  [1] = "1",
+  [2] = "2",
+  [3] = "3",
+  [4] = "4",
+  [5] = "5",
+  [6] = "6",
+  [7] = "7",
+  [8] = "8",
+  [9] = "9",
+  [10] = "a",
+  [11] = "b",
+  [12] = "c",
+  [13] = "d",
+  [14] = "e",
+  [15] = "f",
+})
 
 --- @alias HEX_TABLE = HEX_UPPERCASE_ENCODE_TABLE
 m.HEX_TABLE = m.HEX_UPPERCASE_ENCODE_TABLE
@@ -36,15 +59,17 @@ m.HEX_TO_DEC["c"] = 12
 m.HEX_TO_DEC["d"] = 13
 m.HEX_TO_DEC["e"] = 14
 m.HEX_TO_DEC["f"] = 15
+table_freeze(m.HEX_TO_DEC)
 
 --- @const HEX_BYTE_TO_DEC: { [Integer]: Integer }
 m.HEX_BYTE_TO_DEC = {}
 for hex_char, dec in pairs(m.HEX_TO_DEC) do
   m.HEX_BYTE_TO_DEC[string.byte(hex_char, 1, 1)] = dec
 end
+table_freeze(m.HEX_BYTE_TO_DEC)
 
 --- @const CROCKFORD_BASE32_ENCODE_TABLE: { [Integer]: String }
-m.CROCKFORD_BASE32_ENCODE_TABLE = {
+m.CROCKFORD_BASE32_ENCODE_TABLE = table_freeze({
   [0] = "0",
   [1] = "1",
   [2] = "2",
@@ -77,10 +102,10 @@ m.CROCKFORD_BASE32_ENCODE_TABLE = {
   [29] = "X",
   [30] = "Y",
   [31] = "Z",
-}
+})
 
 --- @const CROCKFORD_BASE32_DECODE_TABLE: { [String]: Integer }
-m.CROCKFORD_BASE32_DECODE_TABLE = {
+m.CROCKFORD_BASE32_DECODE_TABLE = table_freeze({
   ["0"] = 0,
   ["O"] = 0,
   ["o"] = 0,
@@ -141,6 +166,6 @@ m.CROCKFORD_BASE32_DECODE_TABLE = {
   ["y"] = 30,
   ["Z"] = 31,
   ["z"] = 31,
-}
+})
 
-return m
+return table_freeze(m)

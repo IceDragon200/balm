@@ -1,6 +1,8 @@
 # 2026.5.18
 
 * Fixed potential metatable corruption from `table_freeze/1`
+* Added `balm.HEX_LOWERCASE_ENCODE_TABLE`
+* Froze all balm encoding tables and other static lookup tables
 
 # 2026.5.15
 
