@@ -1,3 +1,6 @@
+local string_byte = assert(string.byte)
+local string_sub = assert(string.sub)
+
 --- @namespace balm
 
 local utf8 = {}
@@ -11,7 +14,7 @@ local utf8 = {}
 --- @spec next_codepoint_length(str: String, start: Integer): Integer | nil
 function utf8.next_codepoint_length(str, start)
   start = start or 1
-  local byte = string.byte(str, start)
+  local byte = string_byte(str, start)
   if byte then
     local len = 1
     if byte >= 0xF0 and byte <= 0xF7 then
@@ -52,9 +55,62 @@ function utf8.next_codepoint(str, start)
   start, tail = utf8.next_codepoint_pos(str, start)
 
   if start and tail then
-    return string.sub(str, start, tail), tail
+    return string_sub(str, start, tail), tail
   end
 
+  return nil, nil
+end
+
+--- Extracts the numeric scalar value of the next codepoint using math operations.
+--- Returns the scalar integer value and the tail position.
+---
+--- @since "2026.5.16"
+--- @spec next_scalar(str: String, start?: Integer): (Integer, Integer) | (nil, nil)
+function utf8.next_scalar(str, start)
+  start = start or 1
+  local b1 = string_byte(str, start)
+
+  if not b1 then
+    return nil, nil
+  end
+
+  -- 1-Byte sequence (ASCII: 0xxxxxxx)
+  if b1 < 0x80 then
+    return b1, start
+
+  -- 2-Byte sequence (110xxxxx 10xxxxxx)
+  elseif b1 >= 0xC0 and b1 <= 0xDF then
+    local b2 = string_byte(str, start + 1)
+    if not b2 then return nil, nil end
+
+    -- b1 mask 0x1F is equivalent to b1 - 0xC0 (or b1 % 32)
+    -- b2 mask 0x3F is equivalent to b2 - 0x80 (or b2 % 64)
+    local val = (b1 - 0xC0) * 64 + (b2 - 0x80)
+    return val, start + 1
+
+  -- 3-Byte sequence (1110xxxx 10xxxxxx 10xxxxxx)
+  elseif b1 >= 0xE0 and b1 <= 0xEF then
+    local b2, b3 = string_byte(str, start + 1, start + 2)
+    if not b3 then return nil, nil end
+
+    local val = (b1 - 0xE0) * 4096
+              + (b2 - 0x80) * 64
+              + (b3 - 0x80)
+    return val, start + 2
+
+  -- 4-Byte sequence (11110xxx 10xxxxxx 10xxxxxx 10xxxxxx)
+  elseif b1 >= 0xF0 and b1 <= 0xF7 then
+    local b2, b3, b4 = string_byte(str, start + 1, start + 3)
+    if not b4 then return nil, nil end
+
+    local val = (b1 - 0xF0) * 262144
+              + (b2 - 0x80) * 4096
+              + (b3 - 0x80) * 64
+              + (b4 - 0x80)
+    return val, start + 3
+  end
+
+  -- Fallback for malformed UTF-8 leading bytes
   return nil, nil
 end
 
@@ -63,15 +119,16 @@ end
 --- @spec each_codepoint(str: String, callback: (char: String, start: Integer, tail: Integer) => void, start: Integer): String[]
 function utf8.each_codepoint(str, callback, start)
   local codepoint
+  local head = start or 1
   local tail
   local i = 0
 
-  start = start or 1
-  codepoint, tail = utf8.next_codepoint(str, start)
+  codepoint, tail = utf8.next_codepoint(str, head)
   while codepoint do
     i = i + 1
-    callback(codepoint, start, tail)
-    codepoint, tail = utf8.next_codepoint(str, tail + 1)
+    callback(codepoint, head, tail)
+    head = tail + 1
+    codepoint, tail = utf8.next_codepoint(str, head)
   end
 end
 
