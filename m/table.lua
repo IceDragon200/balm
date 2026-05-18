@@ -7,8 +7,14 @@ local m = {}
 --- @spec freeze(Table): Table
 function m.freeze(a)
   assert(type(a) == "table", "expected a table")
-  setmetatable(a, getmetatable(a) or {})
-  getmetatable(a).__newindex = {}
+  local mt = getmetatable(a)
+  if mt then
+    mt = m.copy(mt)
+  else
+    mt = {}
+  end
+  mt.__newindex = {}
+  setmetatable(a, mt)
   return a
 end
 

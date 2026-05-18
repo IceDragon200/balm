@@ -1,3 +1,7 @@
+# 2026.5.18
+
+* Fixed potential metatable corruption from `table_freeze/1`
+
 # 2026.5.15
 
 * Ported `balm.s.WeightedList` from foundation (lua)
