@@ -1,5 +1,6 @@
 # 2026.5.18
 
+* Added `balm.u.U128` a simple 128 bit integer object
 * Fixed potential metatable corruption from `table_freeze/1`
 * Added `balm.HEX_LOWERCASE_ENCODE_TABLE`
 * Froze all balm encoding tables and other static lookup tables
