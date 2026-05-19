@@ -67,11 +67,10 @@ function m.to_string(v1, sep)
   return v1.x .. sep .. v1.y .. sep .. v1.z .. sep .. v1.w
 end
 
---- @spec inspect(Vector4, sep?: String): String
---- @spec #inspect(sep?: String): String
-function m.inspect(v1, sep)
-  sep = sep or ","
-  return "(" .. v1.x .. sep .. v1.y .. sep .. v1.z .. sep .. v1.w .. ")"
+--- @spec inspect(Vector4): String
+--- @spec #inspect(): String
+function m.inspect(v1)
+  return "(" .. v1.x .. "," .. v1.y .. "," .. v1.z .. "," .. v1.w .. ")"
 end
 
 --- @spec equals(a: Vector4, b: Vector4): Boolean

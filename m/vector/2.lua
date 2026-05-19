@@ -70,11 +70,9 @@ function m.to_string(v2, seperator)
   return v2.x .. seperator .. v2.y
 end
 
---- @since "1.29.0"
---- @spec inspect(Vector2, seperator?: String): String
-function m.inspect(v2, seperator)
-  seperator = seperator or ","
-  return "(" .. v2.x .. seperator .. v2.y .. ")"
+--- @spec inspect(Vector2): String
+function m.inspect(v2)
+  return "(" .. v2.x .. "," .. v2.y .. ")"
 end
 
 --- @spec equals(a: Vector2, b: Vector2): Boolean
