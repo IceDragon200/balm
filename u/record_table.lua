@@ -1,7 +1,9 @@
 local assertions = require("balm/m/assertions")
 local table_copy = assert(require("balm/m/table").copy)
-local IDGenerator = require("balm/u/id_generator")
+local ID128Generator = require("balm/u/id128_generator")
 local Object = require("balm/object")
+
+--- @namespace balm.u
 
 --- Record tables are simple structures for holding in-game objects with an incrementing ID.
 --- Optionally "records" can have a vanity_id which is a known name.
@@ -17,7 +19,7 @@ do
     ic._super.initialize(self)
 
     --- @member id_generator: IDGenerator
-    self.id_generator = IDGenerator:new(options.id_generator)
+    self.id_generator = ID128Generator:new(options.id_generator)
 
     --- @member id_generator: Record<ID, T>
     self.data = options.data and table_copy(options.data) or {}
