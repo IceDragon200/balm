@@ -6,6 +6,7 @@
 
 * Added `Properties#put_new_lazy/2`
 * Added `Properties#get_lazy/2`
+* Added `RecordTable#each/1`
 
 # 2026.5.18
 

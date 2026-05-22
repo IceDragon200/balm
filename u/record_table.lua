@@ -171,6 +171,15 @@ do
   function ic:has_id(id)
     return self.data[id] ~= nil
   end
+
+  --- @since "2026.5.21"
+  --- @spec #each(callback: Function/2): self
+  function ic:each(callback)
+    for id, entry in pairs(self.data) do
+      callback(entry, id)
+    end
+    return self
+  end
 end
 
 return RecordTable
