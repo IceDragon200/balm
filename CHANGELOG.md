@@ -1,5 +1,6 @@
 # 2026.5.22
 
+* Added `balm.Object&bind_metatable/1` For setting the metatable from a class on an existing Table
 * Added `balm.s.OPALL` Ordered, Pooled, Linked-List a specialized structure that combines a LinkedList and a MinHeap
 
 # 2026.5.21

@@ -240,6 +240,12 @@ function Object.extends(super_class, name)
   return klass
 end
 
+--- @spec &bind_metatable(instance: Table): Any
+function Object:bind_metatable(instance)
+  setmetatable(instance, self.__imt)
+  return instance
+end
+
 --- @spec &alloc(): Any
 function Object:alloc()
   local instance = {}
