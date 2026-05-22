@@ -4,6 +4,7 @@ return {
   LinkedList = require("balm/s/linked_list"),
   List = require("balm/s/list"),
   MinHeap = require("balm/s/min_heap"),
+  OPALL = require("balm/s/opall"),
   Records = require("balm/s/records"),
   RingBuffer = require("balm/s/ring_buffer"),
   Vector = require("balm/s/vector"),
