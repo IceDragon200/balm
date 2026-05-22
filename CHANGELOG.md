@@ -1,3 +1,8 @@
+# 2026.5.21
+
+* Added `Properties#put_new_lazy/2`
+* Added `Properties#get_lazy/2`
+
 # 2026.5.18
 
 * Added limits module which just contains some hardcoded integer values
@@ -6,6 +11,7 @@
 * Fixed potential metatable corruption from `table_freeze/1`
 * Added `balm.HEX_LOWERCASE_ENCODE_TABLE`
 * Froze all balm encoding tables and other static lookup tables
+
 # 2026.5.16
 
 * Added `balm.utf8.next_scalar/2`

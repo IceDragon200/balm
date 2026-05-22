@@ -62,6 +62,16 @@ do
     return self
   end
 
+  --- @since "2026.5.21"
+  --- @mutative
+  --- @spec #put_new_lazy(key: String, value: Any): self
+  function ic:put_new_lazy(key, value)
+    if self.data[key] == nil then
+      self.data[key] = value
+    end
+    return self
+  end
+
   --- @mutative
   --- @spec #add(key: String, value: Number, default: Number): Number
   function ic:add(key, value, default)
@@ -192,6 +202,12 @@ do
   --- @spec #get(key: String, default: Any): Any
   function ic:get(key, default)
     return self.data[key] or default
+  end
+
+  --- @since "2026.5.21"
+  --- @spec #get_lazy(key: String, callback: Function/0): Any
+  function ic:get_lazy(key, callback)
+    return self.data[key] or callback()
   end
 
   --- @spec #has_key(key: String): Boolean
