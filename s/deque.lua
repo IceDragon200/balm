@@ -53,6 +53,15 @@ do
     return self.m_tail - self.m_head
   end
 
+  --- @since "2026.5.23"
+  --- @spec #clear(): self
+  function ic:clear()
+    self.m_head = 0
+    self.m_tail = 0
+    self.m_data = {}
+    return self
+  end
+
   --- @spec #push(item: T): self
   function ic:push(item)
     self.m_data[self.m_tail] = item

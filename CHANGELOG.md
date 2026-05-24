@@ -1,3 +1,7 @@
+# 2026.5.23
+
+* Added `balm.s.Deque#clear/0`
+
 # 2026.5.22
 
 * Added `balm.Object&bind_metatable/1` For setting the metatable from a class on an existing Table
