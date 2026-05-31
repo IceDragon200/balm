@@ -391,6 +391,14 @@ function Rect.contains(rect, other)
          cy2 >= py1 and cy2 <= py2
 end
 
+--- Determines if point falls inside the Rectangle's area.
+--- @since "2026.5.30"
+--- @spec contains_point(rect: Rect, x: Number, y: Number): Boolean
+function Rect.contains_point(rect, x, y)
+  return x >= rect.x and x <= (rect.x + rect.w) and
+         y >= rect.y and y <= (rect.y + rect.h)
+end
+
 --- Determines if `rect` and `other` intersect at any point.
 ---
 --- @spec intersects(rect: Rect, other: Rect): Boolean
@@ -419,6 +427,12 @@ end
 
 --- @spec merge(...Rect): Rect
 function Rect.merge(...)
+  return Rect.merge_into(Rect.new(0, 0, 0, 0), ...)
+end
+
+--- @since "2026.5.30"
+--- @spec merge_into(dest: Rect, ...Rect): Rect
+function Rect.merge_into(dest, ...)
   local len = select('#', ...)
 
   local ix2
@@ -469,12 +483,12 @@ function Rect.merge(...)
     end
   end
 
-  return Rect.new(
-    x1 or 0,
-    y1 or 0,
-    (x2 or 0) - (x1 or 0),
-    (y2 or 0) - (y1 or 0)
-  )
+  dest.x = x1 or 0
+  dest.y = y1 or 0
+  dest.w = (x2 or 0) - (x1 or 0)
+  dest.h = (y2 or 0) - (y1 or 0)
+
+  return dest
 end
 
 return Rect

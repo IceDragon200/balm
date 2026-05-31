@@ -1,3 +1,8 @@
+# 2026.5.30
+
+* Added `balm.m.Rect.merge_into/2+` To merge multiple rectangles into one destination rectangle
+* Added `balm.m.Rect.contains_point/2` to determine if the given coordinates are inside the rectangle
+
 # 2026.5.23
 
 * Added `balm.s.Deque#clear/0`
