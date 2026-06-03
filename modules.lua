@@ -18,4 +18,5 @@ return {
   vector3 = require("balm/m/vector/3"),
   vector4 = require("balm/m/vector/4"),
   value = require("balm/m/value"),
+  wave = require("balm/m/wave"),
 }

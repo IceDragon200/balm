@@ -1,5 +1,11 @@
 # 2026.6.2
 
+* Added Wave module
+* Fixed issues with Easers module
+  * `quad_in_out` was misnamed as simply `in_out`
+  * `sine_in` used `sin` instead of `cos` causing a snapping effect when k = 1
+  * `sine_in_out` was missing it's variable k
+* Color now has a metatable, and can be used as a pseudo object
 * Added `balm.m.pack.pack_v2` extracted from Vector2's to_hash
 * Added `balm.m.pack.unpack_v2` extracted from Vector2 from_hash
 

@@ -15,8 +15,18 @@ local function hex_to_color_value(hex)
   return hexpair_to_byte(hex .. hex) / 255.0
 end
 
-local Color = {
+local pargs = { "r", "g", "b", "a" }
 
+local Color = {
+  metatable = {
+    __index = function (v, key)
+      return rawget(v, pargs[key]) or Color[key]
+    end,
+
+    __newindex = function (v, key, value)
+      rawset(v, pargs[key] or key, value)
+    end,
+  },
 }
 
 --- @type Byte: 0..255
@@ -63,7 +73,7 @@ end
 ---
 --- @spec new(r: Float, g: Float, b: Float, a?: Float): Color
 function Color.new(r, g, b, a)
-  return { r = r, g = g, b = b, a = a or 1.0 }
+  return setmetatable({ r = r, g = g, b = b, a = a or 1.0 }, Color.metatable)
 end
 
 --- @spec copy(Color): Color

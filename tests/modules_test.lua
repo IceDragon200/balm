@@ -1,3 +1,4 @@
+require("balm/tests/m/easers_test")
 require("balm/tests/m/list_test")
 require("balm/tests/m/object_test")
 require("balm/tests/m/matrix/3x3_test")
