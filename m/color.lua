@@ -203,6 +203,7 @@ end
 
 --- Converts the given colorstring into a Color table or nil if it was named but doesn't exist.
 ---
+--- @exception
 --- @spec from_colorstring(colorstring: String): Color | nil
 function Color.from_colorstring(colorstring)
   if colorstring:sub(1, 1) == "#" then

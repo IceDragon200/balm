@@ -7,6 +7,7 @@ return {
   list = require("balm/m/list"),
   number = require("balm/m/number"),
   object = require("balm/m/object"),
+  pack = require("balm/m/pack"),
   path = require("balm/m/path"),
   plot = require("balm/m/plot"),
   pretty_units = require("balm/m/pretty_units"),

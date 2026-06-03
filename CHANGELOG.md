@@ -1,3 +1,8 @@
+# 2026.6.2
+
+* Added `balm.m.pack.pack_v2` extracted from Vector2's to_hash
+* Added `balm.m.pack.unpack_v2` extracted from Vector2 from_hash
+
 # 2026.5.30
 
 * Added `balm.m.Rect.merge_into/2+` To merge multiple rectangles into one destination rectangle

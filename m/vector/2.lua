@@ -1,10 +1,12 @@
 local number_round = require("balm/m/number").round
+local pack = require("balm/m/pack")
+local pack_v2 = pack.pack_v2
+local unpack_v2 = pack.unpack_v2
 local ceil = assert(math.ceil)
 local floor = assert(math.floor)
 local max = assert(math.max)
 local min = assert(math.min)
 local abs = assert(math.abs)
-local BIT_TABLE = assert(require("balm/u/bit").BIT_TABLE)
 
 --- @namespace balm.m.vector2
 local xy = {"x", "y"}
@@ -239,25 +241,12 @@ end
 
 --- @spec #to_hash(bits: Number): Number
 function m.to_hash(src, bits)
-  assert(bits > 1 and bits < 55)
-  assert(bits % 2 == 0)
-  local hb = floor(bits / 2)
-  local s = BIT_TABLE[hb - 1]
-  local sb = BIT_TABLE[hb]
-  local x = s + min(max(floor(src.x), -s), s - 1)
-  local y = s + min(max(floor(src.y), -s), s - 1)
-  return y * sb + x
+  return pack_v2(bits, src.x, src.y)
 end
 
 --- @spec #from_hash(bits: Number, hash4: Number): Vector2
 function m.from_hash(dest, bits, hash)
-  assert(bits > 1 and bits < 55)
-  assert(bits % 2 == 0)
-  local hb = floor(bits / 2)
-  local s = BIT_TABLE[hb - 1]
-  local sb = BIT_TABLE[hb]
-  local x = floor(hash % sb) - s
-  local y = floor(floor(hash / sb) % sb) - s
+  local x, y = unpack_v2(bits, hash)
   dest.x = x
   dest.y = y
   return dest
