@@ -9,6 +9,13 @@ case:describe("join/+", function (t2)
   end)
 end)
 
+case:describe("extname/1", function (t2)
+  t2:test("can return the extension name of a file", function (t3)
+    t3:assert_eq(".lua", m.extname("a.lua"))
+    t3:assert_eq(".xyz", m.extname("a.exe.xyz"))
+  end)
+end)
+
 case:execute()
 case:display_stats()
 case:maybe_error()
