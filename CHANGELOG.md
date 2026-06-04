@@ -1,5 +1,6 @@
 # 2026.6.2
 
+* Added `balm.u.RecordTable#size/0`
 * Added Wave module
 * Fixed issues with Easers module
   * `quad_in_out` was misnamed as simply `in_out`

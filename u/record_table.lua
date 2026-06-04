@@ -58,6 +58,16 @@ do
     self.data = {}
   end
 
+  --- @since "2026.6.2"
+  --- @spec #size(): Number
+  function ic:size()
+    local result = 0
+    for _, _ in pairs(self.data) do
+      result = result + 1
+    end
+    return result
+  end
+
   --- @spec #put(id: ID, vanity_id: String, subject: T): T
   function ic:put(id, vanity_id, subject)
     self.id_generator:add_vanity(id, vanity_id)
