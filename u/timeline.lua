@@ -19,6 +19,20 @@ do
     self.tracks = {}
   end
 
+  --- @spec #initialize_copy(other: Timeline): void
+  function ic:initialize_copy(other)
+    ic._super.initialize_copy(self, other)
+    self.tracks = {}
+    for key, track in pairs(other.tracks) do
+      self.tracks[key] = {
+        looped = track.looped,
+        wait = track.wait,
+        active_item = track.active_item,
+        deque = track.deque:copy(),
+      }
+    end
+  end
+
   --- @spec #clear(): self
   function ic:clear()
     self.tracks = {}
@@ -42,6 +56,31 @@ do
     local track = self.tracks[track_id]
     if track then
       track.looped = state
+    end
+    return self
+  end
+
+  --- @spec #complete_track(track_id: ID): self
+  function ic:complete_track(track_id)
+    local track = self.tracks[track_id]
+    if track then
+      if not track.looped then
+        track.wait = 0
+        if track.active_item then
+          track.active_item:complete()
+          track.active_item = false
+        end
+        local ty
+        while not track.deque:is_empty() do
+          ty = track.deque:shift()
+          if "tweener" == ty then
+            -- shift and immediately complete the tweener
+            track.deque:shift():complete()
+          elseif "wait" == ty then
+            track.deque:shift() -- drop the wait
+          end
+        end
+      end
     end
     return self
   end
@@ -101,15 +140,15 @@ do
 
         if not track.active_item and track.wait <= 0 then
           if not track.deque:is_empty() then
-            local type = track.deque:shift()
-            if type == "tweener" then
+            local ty = track.deque:shift()
+            if ty == "tweener" then
               track.active_item = track.deque:shift()
               track.active_item:reset()
               if track.looped then
                 track.deque:push("tweener")
                 track.deque:push(track.active_item)
               end
-            elseif type == "wait" then
+            elseif ty == "wait" then
               track.active_item = false
               track.wait = track.deque:shift()
               if track.looped then
@@ -117,7 +156,7 @@ do
                 track.deque:push(track.wait)
               end
             else
-              error("unexpected type=" .. type)
+              error("unexpected type=" .. ty)
             end
           end
         end
