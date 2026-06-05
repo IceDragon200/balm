@@ -4,6 +4,62 @@
 * Added `balm.u.Tweener#calc_remaining_time/0` calculates the remaining time for the tweener to complete.
 * Added `balm.m.table.split/2`
 * Added `balm.m.table.pop/2`
+* Tweener `from` table can now be nil or its values set as true to use whatever the destination's values were at the time of reset, at a glance it seems useless on its own, as Tweener already did this:
+  ```lua
+  Tweener:new({ x = 0 }, 2, { x = 4 }, nil)
+  Tweener:new({ x = -2 }, 2, { x = 4 }, { x = true })
+
+  -- The strength lies primarily when Tweener is used through the Timeline
+  -- In the below example we set a track loop that modulates the destination's value between
+  -- -2 and 2, but note we don't specific the from values in this context
+  -- the first sequence would scale the x from 8 down to -1, when the next tween is ran
+  -- it will be scaled from whatever the dest is at the time of reset to x = 2.
+  local timeline = Timeline:new()
+
+  local dest = { x = 8 }
+  timeline
+    :new_track(0)
+    :set_track_loop(0, true)
+    :add_tween(0, dest, 1, { x = -2 })
+    :add_tween(0, dest, 1, { x = 2 })
+
+  -- That's great and all, but you can also tag specific fields that should be modified by reset
+  -- In this next example, we're allow x to be taken from its dest, but y should ALWAYS
+  -- be -1 or 1 for its origin based on its tween.
+  local timeline = Timeline:new()
+
+  local dest = { x = 8, y = -8 }
+  timeline
+    :new_track(0)
+    :set_track_loop(0, true)
+    :add_tween(0, dest, 1, { x = -2 }, { x = true, y = -1 })
+    :add_tween(0, dest, 1, { x = 2 }, { x = true, y = 1 })
+  ```
+
+* Tweener `from` and `to` tables now support functions as the values
+  * This allows the Tweener values to be dynamic rather than static, though keep in mind, do note the easer still applies based on the difference between the from and to
+  * A new `origin` field exists which contains
+  ```lua
+  -- In this example, we allow the target x to be controlled by a function which contains a local
+  -- variable y.
+  -- We skip the usual update functions and quietly apply the tween's maximal state using #apply/1
+  -- In the first test, we set it to max for the initial 16 value, then change y to 20 and apply
+  -- it again to prove that the x destination indeed changed.
+  local y = 16
+  local tweener = Tweener:new({ x = 8 }, 2, { x = function (r) return y end })
+  tweener:apply(1)
+  assert(tweener.dest.x == 16)
+
+  y = 20
+  tweener:apply(1)
+  assert(tweener.dest.x == 20)
+
+  -- This doesn't seem useful, but it is when you get into something like the screen's height
+  local tweener = Tweener:new({ y = 8 }, 2, { y = function (_r) return love.graphics.getHeight() end })
+
+  -- ... do your usual frame update, tweener will scale its y destination based on the screen's height
+  tweener:update(0.015)
+  ```
 
 # 2026.6.4
 

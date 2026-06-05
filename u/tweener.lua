@@ -129,11 +129,21 @@ do
   --- @spec #apply(r: Number): self
   function ic:apply(r)
     if self.dest then
+      local a
       local b
+      local bv
       local e
-      for k, a in pairs(self.origin) do
-        b = self.to[k]
+      for k, av in pairs(self.origin) do
+        bv = self.to[k]
         e = self.easers[k]
+        a = av
+        b = bv
+        if type(a) == "function" then
+          a = a(r)
+        end
+        if type(b) == "function" then
+          b = b(r)
+        end
         self.dest[k] = a + (b - a) * e(r)
       end
     end
