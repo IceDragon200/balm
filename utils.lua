@@ -9,6 +9,8 @@ return {
   RecordTable = require("balm/u/record_table"),
   Scheduler = require("balm/u/scheduler"),
   StringBuffer = require("balm/u/string_buffer"),
+  Timeline = require("balm/u/timeline"),
+  Tweener = require("balm/u/tweener"),
   U128 = require("balm/u/u128"),
   WindowSkin = require("balm/u/window_skin"),
 }

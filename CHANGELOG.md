@@ -1,3 +1,8 @@
+# 2026.6.4
+
+* Added `balm.u.Timeline` class, this object is used to schedule tweens over time
+* Added `balm.u.Tweener` class, an object used to apply a tweening operation on an object over time
+
 # 2026.6.2
 
 * Added `balm.u.RecordTable#size/0`
