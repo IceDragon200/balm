@@ -2,6 +2,8 @@
 
 * Added `balm.u.Timeline` class, this object is used to schedule tweens over time
 * Added `balm.u.Tweener` class, an object used to apply a tweening operation on an object over time
+* Fixed `balm.m.value.inspect` throwing up when given a function
+* Fixed `balm.m.value.inspect` over-quoting numbers
 
 # 2026.6.2
 
