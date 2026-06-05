@@ -22,12 +22,13 @@ do
     self.elapsed = 0
     self.duration = duration
     self.to = assertions.is_table(to)
+    self.origin = {}
     self.from = assertions.is_table(from or {})
     self.easers = assertions.is_table(easers or {})
 
     for key, _ in pairs(self.to) do
       if self.from[key] == nil then
-        self.from[key] = self.dest[key]
+        self.from[key] = true
       end
     end
 
@@ -44,6 +45,9 @@ do
         error("unexpected type for easer function, expected a name or function")
       end
     end
+
+    self:refresh_origin()
+
     return self
   end
 
@@ -67,6 +71,7 @@ do
     self.duration = 0
     self.dest = nil
     self.to = nil
+    self.origin = nil
     self.from = nil
     self.easers = nil
     return self
@@ -75,6 +80,20 @@ do
   --- @spec #reset(): self
   function ic:reset()
     self.elapsed = 0
+    self:refresh_origin()
+    return self
+  end
+
+  --- @spec #refresh_origin(): self
+  function ic:refresh_origin()
+    self.origin = {}
+    for key, value in pairs(self.from) do
+      if true == value then
+        self.origin[key] = self.dest[key]
+      else
+        self.origin[key] = value
+      end
+    end
     return self
   end
 
@@ -112,7 +131,7 @@ do
     if self.dest then
       local b
       local e
-      for k, a in pairs(self.from) do
+      for k, a in pairs(self.origin) do
         b = self.to[k]
         e = self.easers[k]
         self.dest[k] = a + (b - a) * e(r)

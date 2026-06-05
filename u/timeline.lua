@@ -42,6 +42,7 @@ do
 
   --- @spec #new_track(id: ID): self
   function ic:new_track(track_id)
+    assert(track_id, "expected a track id")
     local deque = Deque:new()
     self.tracks[track_id] = {
       elapsed = 0,
