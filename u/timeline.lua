@@ -25,6 +25,7 @@ do
     self.tracks = {}
     for key, track in pairs(other.tracks) do
       self.tracks[key] = {
+        elapsed = track.elapsed,
         looped = track.looped,
         wait = track.wait,
         active_item = track.active_item,
@@ -43,6 +44,7 @@ do
   function ic:new_track(track_id)
     local deque = Deque:new()
     self.tracks[track_id] = {
+      elapsed = 0,
       looped = false,
       wait = 0,
       active_item = false,
@@ -65,9 +67,11 @@ do
     local track = self.tracks[track_id]
     if track then
       if not track.looped then
+        track.elapsed = track.elapsed + track.wait
         track.wait = 0
         if track.active_item then
           track.active_item:complete()
+          track.elapsed = track.elapsed + track.active_item:calc_remaining_time()
           track.active_item = false
         end
         local ty
@@ -75,9 +79,16 @@ do
           ty = track.deque:shift()
           if "tweener" == ty then
             -- shift and immediately complete the tweener
-            track.deque:shift():complete()
+            local tweener = track.deque:shift()
+            tweener:reset()
+            track.elapsed = track.elapsed + tweener:calc_remaining_time()
+            tweener:complete()
           elseif "wait" == ty then
-            track.deque:shift() -- drop the wait
+            track.elapsed = track.elapsed + track.deque:shift() -- drop the wait
+          elseif "callback" == ty then
+            track.deque:shift()(track_id, track.elapsed)
+          else
+            error("unexpected type=" .. ty)
           end
         end
       end
@@ -114,6 +125,19 @@ do
     return self
   end
 
+  --- @since "2026.6.5"
+  --- @spec #add_callback(track_id: ID, callback: Function/1): self
+  function ic:add_callback(track_id, callback)
+    local track = self.tracks[track_id]
+    if track then
+      track.deque:push("callback")
+      track.deque:push(callback)
+    else
+      error("no such track id=" .. track_id)
+    end
+    return self
+  end
+
   --- @spec #is_track_empty(track_id: ID): Boolean
   function ic:is_track_empty(track_id)
     local track = self.tracks[track_id]
@@ -138,43 +162,54 @@ do
           track.active_item = false
         end
 
-        if not track.active_item and track.wait <= 0 then
-          if not track.deque:is_empty() then
-            local ty = track.deque:shift()
-            if ty == "tweener" then
-              track.active_item = track.deque:shift()
-              track.active_item:reset()
-              if track.looped then
-                track.deque:push("tweener")
-                track.deque:push(track.active_item)
-              end
-            elseif ty == "wait" then
-              track.active_item = false
-              track.wait = track.deque:shift()
-              if track.looped then
-                track.deque:push("wait")
-                track.deque:push(track.wait)
-              end
-            else
-              error("unexpected type=" .. ty)
-            end
-          end
-        end
-
-        if track.active_item then
-          e = track.active_item:run(z)
-          if e > 0 then
-            z = z - e
-          else
-            break
-          end
-        elseif track.wait > 0 then
+        if track.wait > 0 then
+          track.elapsed = track.elapsed + math.min(track.wait, z)
           track.wait = track.wait - z
           if track.wait < 0 then
             z = -track.wait
             track.wait = 0
           else
             z = 0
+          end
+        elseif not track.active_item then
+          if track.deque:is_empty() then
+            break
+          else
+            local ty = track.deque:shift()
+            if "tweener" == ty then
+              track.active_item = track.deque:shift()
+              track.active_item:reset()
+              if track.looped then
+                track.deque:push("tweener")
+                track.deque:push(track.active_item)
+              end
+            elseif "wait" == ty then
+              track.active_item = false
+              track.wait = track.deque:shift()
+              if track.looped then
+                track.deque:push("wait")
+                track.deque:push(track.wait)
+              end
+            elseif "callback" == ty then
+              track.active_item = false
+              track.wait = 0
+              local cb = track.deque:shift()
+              cb(track_id, track.elapsed)
+              if track.looped then
+                track.deque:push("callback")
+                track.deque:push(cb)
+              end
+            else
+              error("unexpected type=" .. ty)
+            end
+          end
+        elseif track.active_item then
+          e = track.active_item:run(z)
+          if e > 0 then
+            track.elapsed = track.elapsed + e
+            z = z - e
+          else
+            break
           end
         else
           break

@@ -1,3 +1,8 @@
+# 2026.6.5
+
+* Added `balm.u.Timeline#add_callback/2` add a callback option for Timeline items.
+* Added `balm.u.Tweener#calc_remaining_time/0` calculates the remaining time for the tweener to complete.
+
 # 2026.6.4
 
 * Added `balm.u.Timeline` class, this object is used to schedule tweens over time

@@ -47,6 +47,12 @@ do
     return self
   end
 
+  --- @since "2026.6.5"
+  --- @spec #calc_remaining_time(): Number
+  function ic:calc_remaining_time()
+    return self.duration - self.elapsed
+  end
+
   --- Complete the tweener's actions immediately.
   --- @spec #complete(): self
   function ic:complete()
