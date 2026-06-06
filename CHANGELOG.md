@@ -1,5 +1,6 @@
 # 2026.6.5
 
+* `balm.u.rect` now has a metatable
 * Added `balm.m.color.from_rgba32/4`
 * Added `balm.u.Timeline#add_callback/2` add a callback option for Timeline items.
 * Added `balm.u.Tweener#calc_remaining_time/0` calculates the remaining time for the tweener to complete.
