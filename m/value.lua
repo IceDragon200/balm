@@ -1,7 +1,8 @@
---- @namespace balm.m.value
 local table_concat = assert(table.concat)
 local string_format = assert(string.format)
+local Limits = require("balm/limits")
 
+--- @namespace balm.m.value
 local m = {}
 
 local function inspect_write(self, x)
@@ -74,7 +75,11 @@ function m.inspect(root, ctx, is_raw)
   elseif ty == "function" then
     return string_format("%s", root)
   elseif ty == "number" then
-    return string_format("%f", root)
+    if root >= Limits.IMIN[52] and root <= Limits.IMAX[52] then
+      return string_format("%d", root)
+    else
+      return string_format("%f", root)
+    end
   else
     return string_format("%q", root)
   end
