@@ -1,4 +1,3 @@
-local byte_buf = require("balm/p/byte_buf").LE
 local BinSchema = require("balm/p/bin_schema")
 local Object = require("balm/object")
 
@@ -15,7 +14,7 @@ local NaiveDateTime = Object:extends("NaiveDateTimeBinType")
 do
   local ic = NaiveDateTime.instance_class
 
-  function ic:write(file, datetime)
+  function ic:write(byte_buf, file, datetime)
     local all_bytes_written = 0
     -- Datetime Version, in case the format needs to change
     local bytes_written, err = byte_buf:w_u32(file, 0)
@@ -28,7 +27,7 @@ do
     return all_bytes_written, err
   end
 
-  function ic:read(file)
+  function ic:read(byte_buf, file)
     local value, read_bytes = byte_buf:r_u32(file)
     if value == 0 then
       return NaiveDateTimeSchema0:read(file)

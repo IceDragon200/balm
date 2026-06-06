@@ -1,5 +1,13 @@
+local ceil = math.ceil
+local floor = math.floor
+
 --- @namespace balm.m
 local m = {}
+
+m.DEC10 = {}
+for i = 0,12 do
+  m.DEC10[i] = math.pow(10, i)
+end
 
 local unpack = assert(table.unpack or unpack)
 
@@ -14,7 +22,7 @@ function m.integer_be_encode(integer, len)
   local result = {}
   for i = 0,len-1 do
     result[len - i] = integer % 256
-    integer = math.floor(integer / 256)
+    integer = floor(integer / 256)
   end
   return string.char(unpack(result))
 end
@@ -26,7 +34,7 @@ function m.integer_le_encode(integer, len)
   local result = {}
   for i = 1,len do
     result[i] = integer % 256
-    integer = math.floor(integer / 256)
+    integer = floor(integer / 256)
   end
   return string.char(unpack(result))
 end
@@ -46,10 +54,10 @@ function m.integer_hex_be_encode(integer, len)
   for _ = 1,len do
     byte = integer % 256
     lonibble = byte % 16
-    hinibble = math.floor(byte / 16) % 16
+    hinibble = floor(byte / 16) % 16
     result[j] = HEX_TABLE[lonibble]
     result[j - 1] = HEX_TABLE[hinibble]
-    integer = math.floor(integer / 256)
+    integer = floor(integer / 256)
     j = j - 2
   end
   return table.concat(result)
@@ -64,7 +72,7 @@ function m.integer_base16_be_encode(integer, len)
 
   for i = 0,segments-1 do
     result[segments - i] = HEX_TABLE[integer % 16]
-    integer = math.floor(integer / 16)
+    integer = floor(integer / 16)
   end
 
   return table.concat(result)
@@ -79,7 +87,7 @@ function m.integer_base16_le_encode(integer, len)
 
   for i = 1,segments do
     result[i] = HEX_TABLE[integer % 16]
-    integer = math.floor(integer / 16)
+    integer = floor(integer / 16)
   end
 
   return table.concat(result)
@@ -95,7 +103,7 @@ function m.integer_crockford_base32_be_encode(integer, len, return_table)
   for i = 0,segments-1 do
     value = integer % 32
     result[segments - i] = CROCKFORD_BASE32_ENCODE_TABLE[value]
-    integer = math.floor(integer / 32)
+    integer = floor(integer / 32)
   end
 
   if return_table then
@@ -108,14 +116,14 @@ end
 --- @spec integer_crockford_base32_le_encode(Integer, len: Integer, return_table?: Boolean): String
 function m.integer_crockford_base32_le_encode(integer, len, return_table)
   local bits = len * 8
-  local segments = math.ceil(bits / 5)
+  local segments = ceil(bits / 5)
   local result = {}
   local value
 
   for i = 1,segments do
     value = integer % 32
     result[i] = CROCKFORD_BASE32_ENCODE_TABLE[value]
-    integer = math.floor(integer / 32)
+    integer = floor(integer / 32)
   end
 
   if return_table then
@@ -129,8 +137,8 @@ end
 --- @spec round(num: Number, places: Integer): Integer
 function m.round(num, places)
   if places and places > 0 then
-    local pow = math.pow(10, places)
-    local floor = math.floor(num * pow)
+    local pow = m.DEC10[places] or math.pow(10, places)
+    local floor = floor(num * pow)
     local norm = num - floor
 
     if norm >= 0.5 then
@@ -139,7 +147,7 @@ function m.round(num, places)
       return floor / pow
     end
   else
-    local floor = math.floor(num)
+    local floor = floor(num)
     local norm = num - floor
     if norm >= 0.5 then
       return floor + 1

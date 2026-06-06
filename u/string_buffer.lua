@@ -10,7 +10,10 @@ local StringBuffer = Object:extends("balm.u.StringBuffer")
 do
   local ic = StringBuffer.instance_class
 
+  --- @override
+  --- @spec #initialize(data: String): void
   function ic:initialize(data, mode)
+    ic._super.initialize(self)
     self.data = data
     self:open(mode)
   end

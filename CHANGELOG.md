@@ -1,3 +1,10 @@
+# 2026.6.6
+
+* Bit module will now attempt to lookup and possibly load native bit module
+  * This means the lua code is now a fallback and should greatly improve bitops
+* Persistence modules refactored
+  * Everything has been updated, and tested, it's quite a bit to cover here
+
 # 2026.6.5
 
 * `balm.u.rect` now has a metatable

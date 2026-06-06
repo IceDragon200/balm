@@ -465,6 +465,15 @@ do
     self:assert(a == b, message)
   end
 
+  function ic:assert_feq(a, b, message)
+    message = message or function ()
+      return ("expected to be equal to:\n\t left: " .. self:neat_dump(a) ..
+              "\n\tright: " .. self:neat_dump(b))
+    end
+    local epsilon = 0.000001
+    self:assert(math.abs(a - b) < epsilon, message)
+  end
+
   function ic:assert_neq(a, b, message)
     message = message or function ()
       return ("expected to not be equal to:\n\t left: " .. self:neat_dump(a) ..

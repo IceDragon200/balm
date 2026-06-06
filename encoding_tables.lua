@@ -1,8 +1,15 @@
 local table_freeze = assert(require("balm/m/table").freeze)
+local string_char = string.char
 
 --- @namespace balm
 
 local m = {}
+
+m.BYTE2CHAR = {}
+for i = 0,255 do
+  m.BYTE2CHAR[i] = string_char(i)
+end
+table_freeze(m.BYTE2CHAR)
 
 --- @const HEX_UPPERCASE_ENCODE_TABLE: { [Integer]: String }
 m.HEX_UPPERCASE_ENCODE_TABLE = table_freeze({

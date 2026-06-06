@@ -74,7 +74,7 @@ function m.inspect(root, ctx, is_raw)
   elseif ty == "function" then
     return string_format("%s", root)
   elseif ty == "number" then
-    return string_format("%d", root)
+    return string_format("%f", root)
   else
     return string_format("%q", root)
   end

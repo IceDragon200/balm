@@ -14,7 +14,8 @@ local MMAPSchema = BinSchema:new({
   {"data", "map", "u8string", MarshallValue:new()},
 })
 
-local VTable = Object:extends("VTable")
+--- @class balm.p.VTable
+local VTable = Object:extends("balm.p.VTable")
 do
   local ic = VTable.instance_class
 
