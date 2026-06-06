@@ -42,7 +42,9 @@ function m.inspect(root, ctx, is_raw)
   end
 
   local ty = type(root)
-  if "table" == ty  then
+  if "userdata" == ty then
+    return string_format("<$%q>", root)
+  elseif "table" == ty  then
     if not is_raw and type(root.inspect) == "function" then
       return root:inspect(ctx)
     end
