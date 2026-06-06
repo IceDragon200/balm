@@ -43,6 +43,9 @@ do
   --- @spec #new_track(id: ID): self
   function ic:new_track(track_id)
     assert(track_id, "expected a track id")
+    if self.tracks[track_id] then
+      error("a track already exists track_id="..track_id)
+    end
     local deque = Deque:new()
     self.tracks[track_id] = {
       elapsed = 0,
@@ -52,6 +55,16 @@ do
       deque = deque,
     }
     return self
+  end
+
+  --- @since "2026.6.6"
+  --- @spec #upsert_track(track_id: ID): self
+  function ic:upsert_track(track_id)
+    assert(track_id, "expected a track id")
+    if self.tracks[track_id] then
+      return self
+    end
+    return self:new_track(track_id)
   end
 
   --- @spec #set_track_loop(track_id: ID, state: Boolean): self

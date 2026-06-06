@@ -4,6 +4,7 @@
   * This means the lua code is now a fallback and should greatly improve bitops
 * Persistence modules refactored
   * Everything has been updated, and tested, it's quite a bit to cover here
+* Added `balm.u.Timeline#upsert_track/1` for possibly creating a new track or leaving the existing one alone
 
 # 2026.6.5
 
