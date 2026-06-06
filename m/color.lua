@@ -17,7 +17,8 @@ end
 
 local pargs = { "r", "g", "b", "a" }
 
-local Color = {
+local Color
+Color = {
   metatable = {
     __index = function (v, key)
       return rawget(v, pargs[key]) or Color[key]
@@ -208,6 +209,16 @@ function Color.from_rgb24(r, g, b)
     color_channel_clamp(r / 255.0),
     color_channel_clamp(g / 255.0),
     color_channel_clamp(b / 255.0)
+  )
+end
+
+--- @spec from_rgba32(r: Byte, g: Byte, b: Byte, a: Byte): Color
+function Color.from_rgba32(r, g, b, a)
+  return Color.new(
+    color_channel_clamp(r / 255.0),
+    color_channel_clamp(g / 255.0),
+    color_channel_clamp(b / 255.0),
+    color_channel_clamp(a / 255.0)
   )
 end
 
