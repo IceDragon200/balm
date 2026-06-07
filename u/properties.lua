@@ -46,6 +46,18 @@ do
     return false
   end
 
+  --- @since "2026.6.6"
+  --- @spec #keys(): ID[]
+  function ic:keys()
+    local i = 0
+    local result = {}
+    for key, _ in pairs(self.data) do
+      i = i + 1
+      result[i] = key
+    end
+    return result
+  end
+
   --- @mutative
   --- @spec #put(key: String, value: Any): self
   function ic:put(key, value)

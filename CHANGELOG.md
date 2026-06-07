@@ -5,6 +5,7 @@
 * Persistence modules refactored
   * Everything has been updated, and tested, it's quite a bit to cover here
 * Added `balm.u.Timeline#upsert_track/1` for possibly creating a new track or leaving the existing one alone
+* Added `balm.u.Properties#keys/0`
 
 # 2026.6.5
 
