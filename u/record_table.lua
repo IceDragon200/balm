@@ -68,6 +68,30 @@ do
     return result
   end
 
+  --- @since "2026.6.6"
+  --- @spec #keys(): ID[]
+  function ic:keys()
+    local i = 0
+    local result = {}
+    for key, _ in pairs(self.data) do
+      i = i + 1
+      result[i] = key
+    end
+    return result
+  end
+
+  --- @since "2026.6.6"
+  --- @spec #values(): ID[]
+  function ic:values()
+    local i = 0
+    local result = {}
+    for _, value in pairs(self.data) do
+      i = i + 1
+      result[i] = value
+    end
+    return result
+  end
+
   --- @spec #put(id: ID, vanity_id: String, subject: T): T
   function ic:put(id, vanity_id, subject)
     self.id_generator:add_vanity(id, vanity_id)
