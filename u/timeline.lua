@@ -26,6 +26,7 @@ do
     for key, track in pairs(other.tracks) do
       self.tracks[key] = {
         elapsed = track.elapsed,
+        duration = track.duration,
         looped = track.looped,
         wait = track.wait,
         active_item = track.active_item,
@@ -49,6 +50,7 @@ do
     local deque = Deque:new()
     self.tracks[track_id] = {
       elapsed = 0,
+      duration = 0,
       looped = false,
       wait = 0,
       active_item = false,
@@ -119,6 +121,7 @@ do
   function ic:add_tween(track_id, dest, duration, to, from, easers)
     local track = self.tracks[track_id]
     if track then
+      track.duration = track.duration + duration
       track.deque:push("tweener")
       track.deque:push(Tweener:new(dest, duration, to, from, easers))
     else
@@ -131,12 +134,28 @@ do
   function ic:add_wait(track_id, duration)
     local track = self.tracks[track_id]
     if track then
+      track.duration = track.duration + duration
       track.deque:push("wait")
       track.deque:push(duration)
     else
       error("no such track id=" .. track_id)
     end
     return self
+  end
+
+  --- Somtimes you need a track to wait for all other tracks to complete before triggering another
+  --- one, this function calculates the largest duration in the timeline at the time of the call
+  --- and schedules a wait for that duration on the target track.
+  --- @since "2026.6.6"
+  --- @spec #add_wait_for_others(track_id: ID, offset_duration?: Number): self
+  function ic:add_wait_for_others(track_id, offset_duration)
+    local max_duration = 0
+    for otrack_id, other_track in pairs(self.tracks) do
+      if otrack_id ~= track_id then
+        max_duration = math.max(max_duration, other_track.duration)
+      end
+    end
+    return self:add_wait(track_id, max_duration + (offset_duration or 0))
   end
 
   --- @since "2026.6.5"
@@ -178,6 +197,7 @@ do
 
         if track.wait > 0 then
           track.elapsed = track.elapsed + math.min(track.wait, z)
+          track.duration = track.duration - math.min(track.wait, z)
           track.wait = track.wait - z
           if track.wait < 0 then
             z = -track.wait
@@ -221,6 +241,7 @@ do
           e = track.active_item:run(z)
           if e > 0 then
             track.elapsed = track.elapsed + e
+            track.duration = track.duration - e
             z = z - e
           else
             break
