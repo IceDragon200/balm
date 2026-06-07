@@ -8,6 +8,8 @@
 * Added `balm.u.Properties#keys/0`
 * Added `balm.u.RecordTable#keys/0`
 * Added `balm.u.RecordTable#values/0`
+* Added `balm.m.string.split/3` this is a includes_captures argument which allows capture the segments matched specifically by the pattern
+  * The primary usecase is to retain things like spaces when splitting by them
 
 # 2026.6.5
 
