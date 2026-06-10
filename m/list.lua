@@ -10,7 +10,7 @@ local CROCKFORD_BASE32_ENCODE_TABLE = assert(encoding_tables.CROCKFORD_BASE32_EN
 local POW2 = {}
 
 for x = 0,31 do
-  POW2[x] = math.pow(2, x * 8)
+  POW2[x] = 2 ^ (x * 8)
 end
 
 --- Encodes a list of integers or strings as crawford base32, the list should contain interspersed

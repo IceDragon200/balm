@@ -6,7 +6,7 @@ local m = {}
 
 m.DEC10 = {}
 for i = 0,12 do
-  m.DEC10[i] = math.pow(10, i)
+  m.DEC10[i] = 10 ^ i
 end
 
 local unpack = assert(table.unpack or unpack)
@@ -137,7 +137,7 @@ end
 --- @spec round(num: Number, places: Integer): Integer
 function m.round(num, places)
   if places and places > 0 then
-    local pow = m.DEC10[places] or math.pow(10, places)
+    local pow = m.DEC10[places] or (10 ^ places)
     local floor = floor(num * pow)
     local norm = num - floor
 

@@ -1,3 +1,7 @@
+# 2026.6.10
+
+* Replaced `math.pow/2` usage with exponent operator `^`
+
 # 2026.6.6
 
 * Bit module will now attempt to lookup and possibly load native bit module

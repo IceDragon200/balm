@@ -41,14 +41,14 @@ case:describe("math", function (t2)
     local i = m:new{ a = 1, b = 1, c = 1, d = 1 }
     t3:assert_matches(i:mul(1), { a = 1, b = 1, c = 1, d = 1 }) -- identity
     for x = 1,31 do
-      local y = math.pow(2, x)
+      local y = 2 ^ x
       t3:assert_matches(i:mul(2), { a = y, b = y, c = y, d = y }) -- 2^i
     end
   end)
 
   t2:test("can mulitple with a native scalar (shift test)", function (t3)
     local i = m:new{ a = 1, b = 0, c = 0, d = 0 }
-    local y = math.pow(2, 32)
+    local y = 2 ^ 32
     t3:assert_matches(i,        { a = 1, b = 0, c = 0, d = 0 })
     t3:assert_matches(i:mul(y), { a = 0, b = 1, c = 0, d = 0 })
     t3:assert_matches(i:mul(y), { a = 0, b = 0, c = 1, d = 0 })

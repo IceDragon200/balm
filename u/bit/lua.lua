@@ -57,7 +57,7 @@ local UHEX_TABLE = table_freeze({
 local BIT_TABLE = {}
 
 for i = 0,64 do
-  BIT_TABLE[i] = math.floor(math.pow(2, i))
+  BIT_TABLE[i] = math.floor(2 ^ i)
 end
 
 -- Only 32 bit operations to mirror the luajit one

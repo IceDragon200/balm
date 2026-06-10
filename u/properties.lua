@@ -213,7 +213,10 @@ do
 
   --- @spec #get(key: String, default: Any): Any
   function ic:get(key, default)
-    return self.data[key] or default
+    if self.data[key] == nil then
+      return default
+    end
+    return self.data[key]
   end
 
   --- @since "2026.5.21"

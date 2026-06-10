@@ -2,29 +2,28 @@
 -- Little Endian - Byte Decoder
 --
 local bit = require("balm/u/bit")
-local ceil = math.ceil
-local floor = math.floor
-local pow = math.pow
-local string_byte = string.byte
+local ceil = assert(math.ceil)
+local floor = assert(math.floor)
+local string_byte = assert(string.byte)
 
 local FLT_TABLE = {}
 for k, v in pairs(bit.BIT_TABLE) do
   FLT_TABLE[k] = v
 end
 for k = -64,-1 do
-  FLT_TABLE[k] = pow(2, k)
+  FLT_TABLE[k] = 2 ^ k
 end
 
 local INT_MAX = {
   [0] = 1,
-  [1] = floor(pow(2, 8)),
-  [2] = floor(pow(2, 16)),
-  [3] = floor(pow(2, 24)),
-  [4] = floor(pow(2, 32)),
-  [5] = floor(pow(2, 40)),
-  [6] = floor(pow(2, 48)),
-  [7] = floor(pow(2, 56)),
-  [8] = floor(pow(2, 64)),
+  [1] = floor(2 ^ 8),
+  [2] = floor(2 ^ 16),
+  [3] = floor(2 ^ 24),
+  [4] = floor(2 ^ 32),
+  [5] = floor(2 ^ 40),
+  [6] = floor(2 ^ 48),
+  [7] = floor(2 ^ 56),
+  [8] = floor(2 ^ 64),
 }
 
 --- @namespace balm.p.ByteDecoder

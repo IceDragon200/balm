@@ -15,7 +15,7 @@ local table_concat = table.concat
 
 local WMAX = {}
 for i = 1,8 do
-  WMAX[i] = floor(math.pow(256, i))
+  WMAX[i] = floor(256 ^ i)
 end
 
 -- Base module

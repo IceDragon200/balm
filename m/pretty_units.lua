@@ -14,14 +14,14 @@ end
 --- @type Prefix: { [1]: (si_prefix: String), [2]: (si_code: String), [3]: Number }
 
 m.BINARY_PREFIXES = {
-  {"yobi", "Yi", math.pow(2, 80)},
-  {"zebi", "Zi", math.pow(2, 70)},
-  {"exbi", "Ei", math.pow(2, 60)},
-  {"pebi", "Pi", math.pow(2, 50)},
-  {"tebi", "Ti", math.pow(2, 40)},
-  {"gibi", "Gi", math.pow(2, 30)},
-  {"mebi", "Mi", math.pow(2, 20)},
-  {"kibi", "Ki", math.pow(2, 10)},
+  {"yobi", "Yi", 2 ^ 80},
+  {"zebi", "Zi", 2 ^ 70},
+  {"exbi", "Ei", 2 ^ 60},
+  {"pebi", "Pi", 2 ^ 50},
+  {"tebi", "Ti", 2 ^ 40},
+  {"gibi", "Gi", 2 ^ 30},
+  {"mebi", "Mi", 2 ^ 20},
+  {"kibi", "Ki", 2 ^ 10},
   {"", "", 1},
 }
 

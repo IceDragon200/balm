@@ -113,7 +113,7 @@ end)
 case:describe("hash", function (t2)
   for x = 4,50 do
     if x % 2 == 0 then
-      local s = math.pow(2, math.floor(x / 2) - 1)
+      local s = 2 ^ (math.floor(x / 2) - 1)
       local mx = s - 1
       local mn = -s
 
