@@ -1,6 +1,8 @@
 # 2026.6.10
 
 * Replaced `math.pow/2` usage with exponent operator `^`
+* Use `math.atan` where `math.atan2` is not available
+* Added `balm.m.Vector2#angle/0` and `balm.m.Vector2#degrees/0`
 
 # 2026.6.6
 

@@ -7,6 +7,7 @@ local floor = assert(math.floor)
 local max = assert(math.max)
 local min = assert(math.min)
 local abs = assert(math.abs)
+local atan2 = assert(math.atan2 or math.atan)
 
 --- @namespace balm.m.vector2
 local xy = {"x", "y"}
@@ -93,10 +94,24 @@ function m.distance(a, b)
 end
 
 --- @since "1.29.0"
---- @spec length(a: Vector2): Number
+--- @spec length(v2: Vector2): Number
 --- @spec #length(): Number
-function m.length(a)
-  return math.sqrt(a.x * a.x + a.y * a.y)
+function m.length(v2)
+  return math.sqrt(v2.x * v2.x + v2.y * v2.y)
+end
+
+--- @since "2026.6.10"
+--- @spec angle(a: Vector2): Number
+--- @spec #angle(): Number
+function m.angle(v2)
+  return atan2(v2.y, v2.x)
+end
+
+--- @since "2026.6.10"
+--- @spec degrees(a: Vector2): Number
+--- @spec #degrees(): Number
+function m.degrees(v2)
+  return m.angle(v2) * 180 / math.pi
 end
 
 --- @spec floor(dest: Vector2, v2: Vector2): Vector2
