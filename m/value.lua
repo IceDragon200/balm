@@ -75,7 +75,8 @@ function m.inspect(root, ctx, is_raw)
   elseif ty == "function" then
     return string_format("%s", root)
   elseif ty == "number" then
-    if root >= Limits.IMIN[52] and root <= Limits.IMAX[52] then
+    local is_int = (root - math.floor(root)) == 0
+    if is_int and root >= Limits.IMIN[52] and root <= Limits.IMAX[52] then
       return string_format("%d", root)
     else
       return string_format("%f", root)
