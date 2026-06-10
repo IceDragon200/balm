@@ -2,6 +2,9 @@ local assertions = require("balm/m/assertions")
 local Rect = require("balm/m/rect")
 local inspect = require("balm/m/value").inspect
 
+--- @namespace balm.u
+
+--- @module WindowSkin
 local WindowSkin = {}
 
 local function resize_quad(quad, nw, nh)
@@ -20,6 +23,7 @@ local function translate_quad(quad, nx, ny)
   return love.graphics.newQuad(sx + nx, sy + ny, nw or sw, nh or sh, tw, th)
 end
 
+--- @spec create_border(SpriteBatch, target_rect: Rect, src_rect: Rect, thicknesses: Table, options: Table): SpriteBatch
 function WindowSkin.create_border(sprite_batch, target_rect, src_rect, thicknesses, options)
   assert(src_rect)
   -- image sizes
@@ -364,9 +368,7 @@ function WindowSkin.create_from_1x3(sprite_batch, target_rect, src_rect, _unsued
   return sprite_batch
 end
 
---[[
-Expects an even spaced tileset to create the window from
-]]
+--- @spec create_from_3x3(SpriteBatch, target_rect: Rect, src_rect: Rect, _: Any, options: Table): SpriteBatch
 function WindowSkin.create_from_3x3(sprite_batch, target_rect, src_rect, _unsued, options)
   assert(Rect.is_rect_like(target_rect), "expected a rect for target_rect")
   if not Rect.is_rect_like(src_rect) then
@@ -434,119 +436,123 @@ function WindowSkin.create_from_3x3(sprite_batch, target_rect, src_rect, _unsued
   -- 789
   -- 456
   -- 123
-  local q7 = nq(src_rect.x, src_rect.y, cw, ch, image_w, image_h)
-  local q8 = nq(src_rect.x + cw, src_rect.y, cw, ch, image_w, image_h)
-  local q9 = nq(src_rect.x + cw * 2, src_rect.y, cw, ch, image_w, image_h)
-  local q5 = nq(src_rect.x + cw, src_rect.y + ch, cw, ch, image_w, image_h)
-  local q4 = nq(src_rect.x, src_rect.y + ch, cw, ch, image_w, image_h)
-  local q1 = nq(src_rect.x, src_rect.y + ch * 2, cw, ch, image_w, image_h)
-  local q3 = nq(src_rect.x + cw * 2, src_rect.y + ch * 2, cw, ch, image_w, image_h)
-  local q6 = nq(src_rect.x + cw * 2, src_rect.y + ch, cw, ch, image_w, image_h)
-  local q2 = nq(src_rect.x + cw, src_rect.y + ch * 2, cw, ch, image_w, image_h)
+  local q = {
+    [7] = nq(src_rect.x, src_rect.y, cw, ch, image_w, image_h),
+    [8] = nq(src_rect.x + cw, src_rect.y, cw, ch, image_w, image_h),
+    [9] = nq(src_rect.x + cw * 2, src_rect.y, cw, ch, image_w, image_h),
+    [5] = nq(src_rect.x + cw, src_rect.y + ch, cw, ch, image_w, image_h),
+    [4] = nq(src_rect.x, src_rect.y + ch, cw, ch, image_w, image_h),
+    [1] = nq(src_rect.x, src_rect.y + ch * 2, cw, ch, image_w, image_h),
+    [3] = nq(src_rect.x + cw * 2, src_rect.y + ch * 2, cw, ch, image_w, image_h),
+    [6] = nq(src_rect.x + cw * 2, src_rect.y + ch, cw, ch, image_w, image_h),
+    [2] = nq(src_rect.x + cw, src_rect.y + ch * 2, cw, ch, image_w, image_h),
+  }
 
   -- Swap cells
   -- Swap the 4 directionals first
   if not enabled_cells[8] then
-    q8 = q5
+    q[8] = q[5]
   end
 
   if not enabled_cells[6] then
-    q6 = q5
+    q[6] = q[5]
   end
 
   if not enabled_cells[4] then
-    q4 = q5
+    q[4] = q[5]
   end
 
   if not enabled_cells[2] then
-    q2 = q5
+    q[2] = q[5]
   end
 
   -- Then swap the corners
   if not enabled_cells[7] then
-    q7 = q8
+    q[7] = q[8]
   end
   if not enabled_cells[9] then
-    q9 = q8
+    q[9] = q[8]
   end
 
   if not enabled_cells[1] then
-    q1 = q2
+    q[1] = q[2]
   end
   if not enabled_cells[3] then
-    q3 = q2
+    q[3] = q[2]
   end
   -- End Cell swapping
 
   local dx = target_rect.x
   local dy = target_rect.y
   -- top-left
-  sprite_batch:add(resize_quad(q7, lew, teh), dx, dy)
+  sprite_batch:add(resize_quad(q[7], lew, teh), dx, dy)
   -- top-mid
   dx = dx + lew
+  local tmq = resize_quad(q[8], nil, teh)
   for col=1,inner_cols do
-    sprite_batch:add(resize_quad(q8, nil, teh), dx, dy)
+    sprite_batch:add(tmq, dx, dy)
     dx = dx + cw
   end
   if lcw > 0 then
-    sprite_batch:add(resize_quad(q8, lcw, teh), dx, dy)
+    sprite_batch:add(resize_quad(q[8], lcw, teh), dx, dy)
     dx = dx + lcw
   end
   -- top-right
-  sprite_batch:add(translate_quad(resize_quad(q9, rew, teh), rexo, 0), dx, dy)
+  sprite_batch:add(translate_quad(resize_quad(q[9], rew, teh), rexo, 0), dx, dy)
 
   -- body
-  local q5w = resize_quad(q5, lcw, nil)
+  local q5w = resize_quad(q[5], lcw, nil)
   dy = target_rect.y + teh
   for row = 1,inner_rows do
     dx = target_rect.x
-    sprite_batch:add(q4, dx, dy)
+    sprite_batch:add(q[4], dx, dy)
     dx = dx + cw
     for col = 1,inner_cols do
-      sprite_batch:add(q5, dx, dy)
+      sprite_batch:add(q[5], dx, dy)
       dx = dx + cw
     end
     if lcw > 0 then
       sprite_batch:add(q5w, dx, dy)
       dx = dx + lcw
     end
-    sprite_batch:add(q6, dx, dy)
+    sprite_batch:add(q[6], dx, dy)
     dy = dy + ch
   end
   if lch > 0 then
     dx = target_rect.x
-    sprite_batch:add(resize_quad(q4, nil, lch), dx, dy)
-    local q5h = resize_quad(q5, nil, lch)
+    sprite_batch:add(resize_quad(q[4], nil, lch), dx, dy)
+    local q5h = resize_quad(q[5], nil, lch)
     dx = dx + cw
     for col = 1,inner_cols do
       sprite_batch:add(q5h, dx, dy)
       dx = dx + cw
     end
     if lcw > 0 then
-      sprite_batch:add(resize_quad(q5, lcw, lch), dx, dy)
+      sprite_batch:add(resize_quad(q[5], lcw, lch), dx, dy)
       dx = dx + lcw
     end
-    sprite_batch:add(resize_quad(q6, nil, lch), dx, dy)
+    sprite_batch:add(resize_quad(q[6], nil, lch), dx, dy)
     dy = dy + lch
   end
 
   -- bottom-left
   dx = target_rect.x
-  sprite_batch:add(translate_quad(resize_quad(q1, lew, beh), 0, beyo), dx, dy)
+  sprite_batch:add(translate_quad(resize_quad(q[1], lew, beh), 0, beyo), dx, dy)
   -- bottom-mid
   dx = dx + lew
   local i = 0
+  local bmq = translate_quad(resize_quad(q[2], nil, beh), 0, beyo)
   for col = 1,inner_cols do
-    sprite_batch:add(translate_quad(resize_quad(q2, nil, beh), 0, beyo), dx, dy)
+    sprite_batch:add(bmq, dx, dy)
     dx = dx + cw
     i = i + 1
   end
   if lcw > 0 then
-    sprite_batch:add(translate_quad(resize_quad(q2, lcw, beh), 0, beyo), dx, dy)
+    sprite_batch:add(translate_quad(resize_quad(q[2], lcw, beh), 0, beyo), dx, dy)
     dx = dx + lcw
   end
   -- bottom-right
-  sprite_batch:add(translate_quad(resize_quad(q3, rew, beh), rexo, beyo), dx, dy)
+  sprite_batch:add(translate_quad(resize_quad(q[3], rew, beh), rexo, beyo), dx, dy)
   dy = dy + beh
   dx = dx + rew
   return sprite_batch
@@ -580,7 +586,14 @@ function WindowSkin.create_from_layout(sprite_batch, target_rect, layout, src_re
 end
 
 function WindowSkin.create_from_component(sprite_batch, target_rect, component, options)
-  return WindowSkin.create_from_layout(sprite_batch, target_rect, component.layout, component.src_rect, component.thickness, options)
+  return WindowSkin.create_from_layout(
+    sprite_batch,
+    target_rect,
+    component.layout,
+    component.src_rect,
+    component.thickness,
+    options
+  )
 end
 
 return WindowSkin
