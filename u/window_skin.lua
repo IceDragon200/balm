@@ -4,6 +4,9 @@ local inspect = require("balm/m/value").inspect
 
 --- @namespace balm.u
 
+--- Utility module for slicing up texture atlases for generating window skins, this module remains
+--- unchanged for legacy purposes.
+--- If you need more advanced and modern version see the Tiler utility module.
 --- @module WindowSkin
 local WindowSkin = {}
 

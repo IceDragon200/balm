@@ -1,3 +1,7 @@
+# 2026.6.11
+
+* Added `balm.u.Tiler` utility class
+
 # 2026.6.10
 
 * Replaced `math.pow/2` usage with exponent operator `^`
