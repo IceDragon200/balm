@@ -8,6 +8,7 @@ return {
   Quadmap = require("balm/u/quadmap"),
   RecordTable = require("balm/u/record_table"),
   Scheduler = require("balm/u/scheduler"),
+  Spring = require("balm/u/spring"),
   StringBuffer = require("balm/u/string_buffer"),
   Timeline = require("balm/u/timeline"),
   Tweener = require("balm/u/tweener"),

@@ -1,6 +1,8 @@
 # 2026.6.11
 
 * Added `balm.u.Tiler` utility class
+* Added `balm.m.dyn_vector` module
+* Added `balm.u.Spring` utility class
 
 # 2026.6.10
 

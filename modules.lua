@@ -3,6 +3,7 @@ return {
   assertions = require("balm/m/assertions"),
   color = require("balm/m/color"),
   cuboid = require("balm/m/cuboid"),
+  dyn_vector = require("balm/m/dyn_vector"),
   easers = require("balm/m/easers"),
   list = require("balm/m/list"),
   number = require("balm/m/number"),

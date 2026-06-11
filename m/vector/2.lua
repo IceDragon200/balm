@@ -75,7 +75,7 @@ end
 
 --- @spec inspect(Vector2): String
 function m.inspect(v2)
-  return "(" .. v2.x .. "," .. v2.y .. ")"
+  return string.format("balm.m.vector.2<%f, %f>", v2.x, v2.y)
 end
 
 --- @spec equals(a: Vector2, b: Vector2): Boolean
