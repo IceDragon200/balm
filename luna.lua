@@ -636,6 +636,7 @@ do
     for _,callback in ipairs(self.finalize_all_callbacks) do
       callback(tags)
     end
+    collectgarbage("collect")
     return self
   end
 
