@@ -10,15 +10,15 @@ case:describe("#initialize/0", function (t2)
 end)
 
 case:describe("#initialize/1", function (t2)
-  t2:test("can initialize a new spring object with reynold mode", function (t3)
+  t2:test("can initialize a new spring object with steering mode", function (t3)
     local s = M:new({
-      mode = "reynold",
+      mode = "steering",
       max_speed = 350,
       max_force = 15,
       current = { x = 0, y = 0 },
       target = { x = 120, y = 80 },
     })
-    t3:assert_eq(s.mode, "reynold")
+    t3:assert_eq(s.mode, "steering")
 
     for x = 0,1000 do
       s:update(0.1)
