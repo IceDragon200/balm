@@ -138,6 +138,40 @@ case:describe("#divide/2", function (t2)
   end)
 end)
 
+case:describe("#modulo/2", function (t2)
+  t2:test("can divide two vectors", function (t3)
+    local v = m:new{ size = 10 }
+    v:random(10, 1)
+    local v2 = m:new{ size = 10 }
+    v2:random(10, 1)
+
+    local dest = m:new{ size = 10 }
+    dest:modulo(v, v2)
+
+    t3:assert_eq(dest.m_size, 10)
+    for i = 1,dest.m_size do
+      t3:assert_eq(dest.m_data[i], v.m_data[i] % v2.m_data[i])
+    end
+  end)
+end)
+
+case:describe("#exponent/2", function (t2)
+  t2:test("can divide two vectors", function (t3)
+    local v = m:new{ size = 10 }
+    v:random(10, 1)
+    local v2 = m:new{ size = 10 }
+    v2:random(10, 1)
+
+    local dest = m:new{ size = 10 }
+    dest:exponent(v, v2)
+
+    t3:assert_eq(dest.m_size, 10)
+    for i = 1,dest.m_size do
+      t3:assert_eq(dest.m_data[i], v.m_data[i] ^ v2.m_data[i])
+    end
+  end)
+end)
+
 case:describe("#apply/3", function (t2)
   t2:test("can apply a function to two vectors", function (t3)
     local v = m:new{ size = 10 }
@@ -215,6 +249,36 @@ case:describe("#'/'/1", function (t2)
     t3:assert_eq(dest.m_size, 10)
     for i = 1,dest.m_size do
       t3:assert_eq(dest.m_data[i], v.m_data[i] / v2.m_data[i])
+    end
+  end)
+end)
+
+case:describe("#'%'/1", function (t2)
+  t2:test("can modulo two vectors into a new vector", function (t3)
+    local v = m:new{ size = 10 }
+    v:random(10, 1)
+    local v2 = m:new{ size = 10 }
+    v2:random(10, 1)
+
+    local dest = v % v2
+    t3:assert_eq(dest.m_size, 10)
+    for i = 1,dest.m_size do
+      t3:assert_eq(dest.m_data[i], v.m_data[i] % v2.m_data[i])
+    end
+  end)
+end)
+
+case:describe("#'^'/1", function (t2)
+  t2:test("can divide two vectors into a new vector", function (t3)
+    local v = m:new{ size = 10 }
+    v:random(10, 1)
+    local v2 = m:new{ size = 10 }
+    v2:random(10, 1)
+
+    local dest = v ^ v2
+    t3:assert_eq(dest.m_size, 10)
+    for i = 1,dest.m_size do
+      t3:assert_eq(dest.m_data[i], v.m_data[i] ^ v2.m_data[i])
     end
   end)
 end)

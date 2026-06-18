@@ -1,3 +1,8 @@
+# 2026.6.18
+
+* Added `balm.s.Vector#modulo/2`
+* Added `balm.s.Vector#exponent/2`
+
 # 2026.6.11
 
 * Added `balm.u.Tiler` utility class

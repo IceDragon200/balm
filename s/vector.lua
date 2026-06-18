@@ -212,6 +212,36 @@ do
   --- @alias div = divide
   ic.div = ic.divide
 
+  --- Modulo vector a by b and stores the result in the callee.
+  --- @spec #modulo(a: Vector, b: Vector): self
+  function ic:modulo(a, b)
+    local len = min(min(self.m_size, a.m_size), b.m_size)
+    if len > 0 then
+      for i = 1,len do
+        self.m_data[i] = a.m_data[i] % b.m_data[i]
+      end
+    end
+    return self
+  end
+
+  --- @alias mod = modulo
+  ic.mod = ic.modulo
+
+  --- Modulo vector a by b and stores the result in the callee.
+  --- @spec #exponent(a: Vector, b: Vector): self
+  function ic:exponent(a, b)
+    local len = min(min(self.m_size, a.m_size), b.m_size)
+    if len > 0 then
+      for i = 1,len do
+        self.m_data[i] = a.m_data[i] ^ b.m_data[i]
+      end
+    end
+    return self
+  end
+
+  --- @alias exp = exponent
+  ic.exp = ic.exponent
+
   --- Determines the minimum values between vectors a and b and stores the result in the callee.
   --- @spec #min(a: Vector, b: Vector): self
   function ic:min(a, b)
@@ -376,6 +406,22 @@ do
     dest.m_size = self.m_size
     dest.m_data = {}
     return dest:divide(self, other)
+  end
+
+  --- @spec #%(other: Vector): Vector
+  function mt:__mod(other)
+    local dest = Vector:alloc()
+    dest.m_size = self.m_size
+    dest.m_data = {}
+    return dest:modulo(self, other)
+  end
+
+  --- @spec #^(other: Vector): Vector
+  function mt:__pow(other)
+    local dest = Vector:alloc()
+    dest.m_size = self.m_size
+    dest.m_data = {}
+    return dest:exponent(self, other)
   end
 
   --- @spec #-@(): Vector
