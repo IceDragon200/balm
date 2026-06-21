@@ -111,6 +111,39 @@ function Dir8:get_cardinal_dir(from, to)
   end
 end
 
+local CARDINAL_DIR8 = {
+  [-8] = 6,
+  [-7] = 3,
+  [-6] = 2,
+  [-5] = 1,
+  [-4] = 4,
+  [-3] = 7,
+  [-2] = 8,
+  [-1] = 9,
+  [0] = 6,
+  [1] = 3,
+  [2] = 2,
+  [3] = 1,
+  [4] = 4,
+  [5] = 7,
+  [6] = 8,
+  [7] = 9,
+  [8] = 6,
+}
+
+--- @since "2026.6.20"
+--- @spec &vector2_to_cardinal_dir8(v: Vector2): Number
+function Dir8:vector2_to_cardinal_dir8(v)
+  if v.x == 0 and v.y == 0 then
+    return 5
+  end
+  local v2 = Vector2.normalize(Vector2.zero(), v)
+  local degs = Vector2.degrees(v2) - 22.5
+  local q = round((degs % 360) / 45)
+  print(v2:inspect(), degs, q)
+  return CARDINAL_DIR8[q]
+end
+
 --- @spec &project_towards(origin: Vector2, target: Vector2, scale: Vector2 | Number): Vector2
 function Dir8:project_towards(origin, target, scale)
   local dir4 = Dir8:get_cardinal_dir(origin, target)
