@@ -1,3 +1,12 @@
+# 2026.6.20
+
+* Added `balm.Luna#assert_vector/3` due to issues with testing vectors in lua 5.4, this assertion was added to perform a `feq` internally.
+* Added new functions for `balm.m.vector.2`
+  * Added metamethod for `%`, mod
+  * Added metamethod for `^`, pow
+  * Added `from_radians/1`
+  * Added `from_degrees/1`
+
 # 2026.6.18
 
 * Added `balm.m.object.construct_list/2` to complete the construction helpers

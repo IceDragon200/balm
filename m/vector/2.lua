@@ -52,6 +52,18 @@ function m.copy(v1)
   return m.new(v1.x, v1.y)
 end
 
+--- @since "2026.6.20"
+--- @spec from_radians(rads: Number): Vector2
+function m.from_radians(rads)
+  return m.new(math.cos(rads), math.sin(rads))
+end
+
+--- @since "2026.6.20"
+--- @spec from_degrees(deg: Number): Vector2
+function m.from_degrees(deg)
+  return m.from_radians((deg % 360) * math.pi / 180)
+end
+
 --- @spec unwrap(Any): (Number, Number)
 function m.unwrap(v)
   if type(v) == "table" then
@@ -100,18 +112,23 @@ function m.length(v2)
   return math.sqrt(v2.x * v2.x + v2.y * v2.y)
 end
 
+--- @since "2026.6.20"
+--- @spec radians(a: Vector2): Number
+--- @spec #radians(): Number
+function m.radians(v2)
+  return atan2(v2.y, v2.x)
+end
+
 --- @since "2026.6.10"
 --- @spec angle(a: Vector2): Number
 --- @spec #angle(): Number
-function m.angle(v2)
-  return atan2(v2.y, v2.x)
-end
+m.angle = m.radians
 
 --- @since "2026.6.10"
 --- @spec degrees(a: Vector2): Number
 --- @spec #degrees(): Number
 function m.degrees(v2)
-  return m.angle(v2) * 180 / math.pi
+  return m.radians(v2) * 180 / math.pi
 end
 
 --- @spec floor(dest: Vector2, v2: Vector2): Vector2
@@ -338,6 +355,26 @@ function m.metatable.__div(a, b)
   return m.new(
     a.x / v2x,
     a.y / v2y
+  )
+end
+
+--- @since "2026.6.20"
+--- @spec metatable.__mod(Vector2, Vector2): Vector2
+function m.metatable.__mod(a, b)
+  local v2x, v2y = m.unwrap(b)
+  return m.new(
+    a.x % v2x,
+    a.y % v2y
+  )
+end
+
+--- @since "2026.6.20"
+--- @spec metatable.__pow(Vector2, Vector2): Vector2
+function m.metatable.__pow(a, b)
+  local v2x, v2y = m.unwrap(b)
+  return m.new(
+    a.x ^ v2x,
+    a.y ^ v2y
   )
 end
 

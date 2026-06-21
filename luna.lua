@@ -94,6 +94,18 @@ local function table_equals(a, b)
   return true
 end
 
+local EPSILON = 0.000001
+
+local function vector_equals(a, b)
+  local merged = table_merge(a, b)
+  for key,_ in pairs(merged) do
+    if math.abs(a[key] - b[key]) > EPSILON then
+      return false
+    end
+  end
+  return true
+end
+
 --- @private_spec table_matches(a: Any, pattern: Any): Boolean
 local function table_matches(a, pattern)
   local sa = {a}
@@ -470,8 +482,7 @@ do
       return ("expected to be equal to:\n\t left: " .. self:neat_dump(a) ..
               "\n\tright: " .. self:neat_dump(b))
     end
-    local epsilon = 0.000001
-    self:assert(math.abs(a - b) < epsilon, message)
+    self:assert(math.abs(a - b) < EPSILON, message)
   end
 
   function ic:assert_neq(a, b, message)
@@ -488,6 +499,18 @@ do
               "\n\tright: " .. self:neat_dump(b))
     end
     self:assert(table_equals(a, b), message)
+  end
+
+  --- Performs a comparison on two vector-like tables, that is a table whose values are numbers.
+  ---
+  --- @since "2026.5.7"
+  --- @spec #assert_vector(left: Record<Number>, right: Record<Number>, message?: String): void
+  function ic:assert_vector(left, right, message)
+    message = message or function ()
+      return ("expected to match:\n\t given: " .. self:neat_dump(left) ..
+              "\n\tright: " .. self:neat_dump(right))
+    end
+    self:assert(vector_equals(left, right), message)
   end
 
   --- Performs a partial matching of given value with the provided pattern.
