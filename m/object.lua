@@ -27,9 +27,19 @@ end
 
 --- @since "2026.5.7"
 --- @spec construct_record(Class<T>, Record<ID, Table>): Record<ID, T>
-function m.construct_record(klass, raw)
+function m.construct_record(klass, record)
   local result = {}
-  for key, tab in pairs(raw) do
+  for key, tab in pairs(record) do
+    result[key] = m.construct(klass, tab)
+  end
+  return result
+end
+
+--- @since "2026.6.18"
+--- @spec construct_list(Class<T>, Record<ID, Table>): Record<ID, T>
+function m.construct_list(klass, list)
+  local result = {}
+  for key, tab in ipairs(list) do
     result[key] = m.construct(klass, tab)
   end
   return result

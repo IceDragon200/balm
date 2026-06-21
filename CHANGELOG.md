@@ -1,5 +1,6 @@
 # 2026.6.18
 
+* Added `balm.m.object.construct_list/2` to complete the construction helpers
 * Added `balm.s.Vector#modulo/2`
 * Added `balm.s.Vector#exponent/2`
 
