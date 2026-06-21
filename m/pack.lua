@@ -34,7 +34,7 @@ end
 
 --- @since "2026.6.2"
 --- @spec pack_v3(bits: Number, a: Number, b: Number, c: Number): Number
-function m.pack_v3(bits, a, b, c, d)
+function m.pack_v3(bits, a, b, c)
   assert(bits > 1 and bits < 55)
   assert(bits % 3 == 0)
   local tb = floor(bits / 3)
