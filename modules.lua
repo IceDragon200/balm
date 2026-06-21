@@ -15,6 +15,7 @@ return {
   rect = require("balm/m/rect"),
   string = require("balm/m/string"),
   table = require("balm/m/table"),
+  units = require("balm/m/units"),
   vector2 = require("balm/m/vector/2"),
   vector3 = require("balm/m/vector/3"),
   vector4 = require("balm/m/vector/4"),

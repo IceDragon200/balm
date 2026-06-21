@@ -10,6 +10,7 @@
 * Added `balm.m.pack.unpack_v3`
 * Added `balm.m.pack.pack_v4`
 * Added `balm.m.pack.unpack_v4`
+* Added `balm.m.units`, a new module which uses pretty units configured prefix to provide a utility module for converting values to and from their prefixes.
 
 # 2026.6.18
 
