@@ -6,6 +6,10 @@
   * Added metamethod for `^`, pow
   * Added `from_radians/1`
   * Added `from_degrees/1`
+* Added `balm.m.pack.pack_v3`
+* Added `balm.m.pack.unpack_v3`
+* Added `balm.m.pack.pack_v4`
+* Added `balm.m.pack.unpack_v4`
 
 # 2026.6.18
 
