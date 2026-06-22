@@ -1,3 +1,7 @@
+# 2026.6.22
+
+* Improve error messages for some assertions functions
+
 # 2026.6.21
 
 * Added `balm.u.dir8&normal_to_cardinal_dir8/2`
