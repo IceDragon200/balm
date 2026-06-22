@@ -4,6 +4,7 @@
 local round = require("balm/m/number").round
 local table_freeze = require("balm/m/table").freeze
 local Vector2 = require("balm/m/vector/2")
+local atan2 = assert(math.atan2 or math.atan)
 
 --- @module balm.u.dir8
 local Dir8 = {
@@ -131,6 +132,14 @@ local CARDINAL_DIR8 = {
   [8] = 6,
 }
 
+function Dir8:degrees_to_radians(deg)
+  return (deg % 360) * math.pi / 180
+end
+
+function Dir8:radians_to_degrees(rads)
+  return rads * 180 / math.pi
+end
+
 --- @since "2026.6.20"
 --- @spec &vector2_to_cardinal_dir8(v: Vector2): Number
 function Dir8:vector2_to_cardinal_dir8(v)
@@ -140,7 +149,17 @@ function Dir8:vector2_to_cardinal_dir8(v)
   local v2 = Vector2.normalize(Vector2.zero(), v)
   local degs = Vector2.degrees(v2) - 22.5
   local q = round((degs % 360) / 45)
-  print(v2:inspect(), degs, q)
+  return CARDINAL_DIR8[q]
+end
+
+--- @since "2026.6.21"
+--- @spec &normal_to_cardinal_dir8(x: Number, y: Number): Number
+function Dir8:normal_to_cardinal_dir8(x, y)
+  if x == 0 and y == 0 then
+    return 5
+  end
+  local degs = atan2(y, x) * 180 / math.pi - 22.5
+  local q = round((degs % 360) / 45)
   return CARDINAL_DIR8[q]
 end
 

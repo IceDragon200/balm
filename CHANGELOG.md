@@ -1,3 +1,7 @@
+# 2026.6.21
+
+* Added `balm.u.dir8&normal_to_cardinal_dir8/2`
+
 # 2026.6.20
 
 * Added `balm.Luna#assert_vector/3` due to issues with testing vectors in lua 5.4, this assertion was added to perform a `feq` internally.
