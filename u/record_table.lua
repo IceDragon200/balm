@@ -22,7 +22,13 @@ do
     self.id_generator = ID128Generator:new(options.id_generator)
 
     --- @member id_generator: Record<ID, T>
-    self.data = options.data and table_copy(options.data) or {}
+    self.data = {}
+
+    if options.data then
+      for id, item in pairs(options.data) do
+        self:put(id, item.vanity_id, item)
+      end
+    end
   end
 
   --- @override
