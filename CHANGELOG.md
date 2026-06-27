@@ -1,3 +1,7 @@
+# 2026.6.27
+
+* Added `balm.m.enum.new/+` Which creates a string-enum from a list of strings.
+
 # 2026.6.22
 
 * Improve error messages for some assertions functions

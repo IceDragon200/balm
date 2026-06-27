@@ -5,6 +5,7 @@ return {
   cuboid = require("balm/m/cuboid"),
   dyn_vector = require("balm/m/dyn_vector"),
   easers = require("balm/m/easers"),
+  enum = require("balm/m/enum"),
   list = require("balm/m/list"),
   number = require("balm/m/number"),
   object = require("balm/m/object"),
