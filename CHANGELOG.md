@@ -1,3 +1,7 @@
+# 2026.6.28
+
+* Added `balm.u.RecordTable#get_by_ref/1`
+
 # 2026.6.27
 
 * Added `balm.m.enum.new/+` Which creates a string-enum from a list of strings.

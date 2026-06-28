@@ -176,6 +176,17 @@ do
     return nil
   end
 
+  --- @since "2026.6.28"
+  --- @spec #get_by_ref(ref: Table): T | nil
+  function ic:get_by_ref(ref)
+    if ref.id then
+      return self:get(ref.id)
+    elseif ref.vanity_id then
+      return self:get_by_vanity_id(ref.vanity_id)
+    end
+    return nil
+  end
+
   --- @spec #fetch_id(vanity_id: String): ID | nil
   function ic:fetch_id(vanity_id)
     local id = self.id_generator:get_id(vanity_id)
