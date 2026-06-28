@@ -213,16 +213,21 @@ do
 
   --- @spec #get(key: String, default: Any): Any
   function ic:get(key, default)
-    if self.data[key] == nil then
+    local value = self.data[key]
+    if value == nil then
       return default
     end
-    return self.data[key]
+    return value
   end
 
   --- @since "2026.5.21"
   --- @spec #get_lazy(key: String, callback: Function/0): Any
   function ic:get_lazy(key, callback)
-    return self.data[key] or callback()
+    local value = self.data[key]
+    if value == nil then
+      return callback()
+    end
+    return value
   end
 
   --- @spec #has_key(key: String): Boolean
