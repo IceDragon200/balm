@@ -1,3 +1,9 @@
+# 2026.6.29
+
+* Added `balm.u.RecordTable#reduce/2`
+* Added `balm.u.RecordTable#is_any/1`
+* Added `balm.u.RecordTable#is_all/1`
+
 # 2026.6.28
 
 * Added `balm.u.RecordTable#get_by_ref/1`

@@ -2,6 +2,7 @@ local assertions = require("balm/m/assertions")
 local table_copy = assert(require("balm/m/table").copy)
 local ID128Generator = require("balm/u/id128_generator")
 local Object = require("balm/object")
+local max = assert(math.max)
 
 --- @namespace balm.u
 
@@ -126,7 +127,7 @@ do
     end
     for key, value in pairs(record) do
       assertions.is_number(key)
-      self.id_generator.x = math.max(self.id_generator.x, key)
+      self.id_generator.x = max(self.id_generator.x, key)
       self.data[key] = value
     end
     return self
@@ -224,12 +225,43 @@ do
   end
 
   --- @since "2026.5.21"
-  --- @spec #each(callback: Function/2): self
+  --- @spec #each(callback: (entry: T, id: ID) => void): self
   function ic:each(callback)
     for id, entry in pairs(self.data) do
       callback(entry, id)
     end
     return self
+  end
+
+  --- @since "2026.6.29"
+  --- @spec #reduce<A>(acc: A, callback: (entry: T, id: ID, acc: A) => A): A
+  function ic:reduce(acc, callback)
+    for id, entry in pairs(self.data) do
+      acc = callback(entry, id, acc)
+    end
+    return A
+  end
+
+  --- @since "2026.6.29"
+  --- @spec #is_all(callback: (entry: T, id: ID) => Boolean): Boolean
+  function ic:is_all(callback)
+    for id, entry in pairs(self.data) do
+      if not callback(entry, id) then
+        return false
+      end
+    end
+    return true
+  end
+
+  --- @since "2026.6.29"
+  --- @spec #is_any(callback: (entry: T, id: ID) => Boolean): Boolean
+  function ic:is_any(callback)
+    for id, entry in pairs(self.data) do
+      if callback(entry, id) then
+        return true
+      end
+    end
+    return false
   end
 end
 
