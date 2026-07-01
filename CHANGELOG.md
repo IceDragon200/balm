@@ -1,3 +1,9 @@
+# 2026.7.1
+
+* Added `balm.s.OPALL#merge/1`
+* Added `balm.s.OPALL#each/1`
+* Added `balm.s.OPALL#reduce/2`
+
 # 2026.6.29
 
 * Added `balm.u.RecordTable#reduce/2`

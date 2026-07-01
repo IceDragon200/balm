@@ -42,6 +42,7 @@ local OPALL = Object:extends("balm.s.OPALL")
 do
   local ic = OPALL.instance_class
 
+  --- @override
   --- @spec #initialize(options?: Table): void
   function ic:initialize(options)
     options = options or {}
@@ -136,6 +137,17 @@ do
     return node
   end
 
+  --- @since "2026.7.1"
+  --- @spec #merge(other: OPALL): self
+  function ic:merge(other)
+    local head = other.next
+    while head do
+      self:insert(head.data, head.weight)
+      head = head.next
+    end
+    return self
+  end
+
   --- @spec #_do_insert(node: Node): void
   function ic:_do_insert(node)
     self.m_size = self.m_size + 1
@@ -225,6 +237,28 @@ do
     end
 
     return Node:new()
+  end
+
+  --- @since "2026.7.1"
+  --- @spec #each(callback: (entry: T, weight: Number) => void): self
+  function ic:each(callback)
+    local head = self.next
+    while head do
+      callback(head.data, head.weight)
+      head = head.next
+    end
+    return self
+  end
+
+  --- @since "2026.7.1"
+  --- @spec #reduce<A>(acc: A, callback: (entry: T, weight: Number, acc: A) => void): A
+  function ic:reduce(acc, callback)
+    local head = self.next
+    while head do
+      acc = callback(head.data, head.weight, acc)
+      head = head.next
+    end
+    return acc
   end
 end
 
