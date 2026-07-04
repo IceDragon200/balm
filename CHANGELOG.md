@@ -1,3 +1,24 @@
+# 2026.7.4
+
+* Added `balm.s.List#delete/1` Which can remove all instances of a given value from the list
+* Added `balm.s.List##@` i.e. `__len` metamethod
+  ```lua
+  local list = List:new()
+  assert(#list == 0)
+  list:push("a", "b", "c")
+  assert(#list == 3)
+  ```
+* Added `balm.s.List#@..` i.e. `__concat` metamethod
+  ```lua
+  local list = List:new({ "a" , "b", "c" })
+  local list2 = List:new({ 1, 2, 3 })
+  local list3 = list .. list2
+
+  assert(#list3, 6)
+
+  list3:to_table() -- => { "a", "b", "c", 1, 2, 3 }
+  ```
+
 # 2026.7.1
 
 * Added `balm.s.OPALL#merge/1`
