@@ -1,3 +1,5 @@
+local random = assert(math.random)
+
 --- @namespace balm.m.table
 
 local m = {}
@@ -355,7 +357,7 @@ function m.sample(t)
   if next(t) then
     local keys = m.keys(t)
     local len = #keys
-    local key = keys[math.random(len)]
+    local key = keys[random(len)]
 
     return key, t[key]
   end
