@@ -101,7 +101,9 @@ do
 
   --- @spec #put(id: ID, vanity_id: String, subject: T): T
   function ic:put(id, vanity_id, subject)
-    self.id_generator:add_vanity(id, vanity_id)
+    if vanity_id then
+      self.id_generator:add_vanity(id, vanity_id)
+    end
     subject.id = id
     subject.vanity_id = vanity_id
     self.data[id] = subject
