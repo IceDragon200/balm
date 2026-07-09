@@ -1,6 +1,8 @@
 # 2026.7.8
 
 * Added `balm.s.OrderedSet` a table works well as an unordered set, but trying to keep things ordered is a different ballgame.
+* Added `balm.FEATURES` table which alerts the user and the modules what features are available in the runtime
+  * For example the `__len` metamethod is not available in luajit
 
 # 2026.7.4
 
