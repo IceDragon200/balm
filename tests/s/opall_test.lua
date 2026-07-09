@@ -1,7 +1,7 @@
 local Luna = require("balm/luna")
 local M = require("balm/s/opall")
 
-local case = Luna:new("balm.OPALL")
+local case = Luna:new("balm.s.OPALL")
 
 case:describe("&new/0", function (t2)
   t2:test("can initialize a new OPALL with no arguments", function (t3)

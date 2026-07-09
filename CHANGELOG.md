@@ -1,3 +1,7 @@
+# 2026.7.8
+
+* Added `balm.s.OrderedSet` a table works well as an unordered set, but trying to keep things ordered is a different ballgame.
+
 # 2026.7.4
 
 * Added `balm.s.List#delete/1` Which can remove all instances of a given value from the list

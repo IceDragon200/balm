@@ -1,6 +1,6 @@
-local min = math.min
-local random = math.random
-local floor = math.floor
+local min = assert(math.min)
+local random = assert(math.random)
+local floor = assert(math.floor)
 
 local Object = require("balm/object")
 local table_copy = require("balm/m/table").copy
