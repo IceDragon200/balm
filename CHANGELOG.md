@@ -1,3 +1,7 @@
+# 2026.7.12
+
+* Fixed some bugs surfaced from a luacheck
+
 # 2026.7.8
 
 * Added `balm.s.OrderedSet` a table works well as an unordered set, but trying to keep things ordered is a different ballgame.

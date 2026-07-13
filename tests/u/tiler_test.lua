@@ -6,7 +6,7 @@ local floor = assert(math.floor)
 
 local case = Luna:new("balm.u.Tiler")
 
-if love and love.graphics then
+if rawget(_G, "love") and love.graphics then
   case:describe("#add_component/3", function (t2)
     t2:test("can add a component to a Tiler object", function (t3)
       local s = M:new()

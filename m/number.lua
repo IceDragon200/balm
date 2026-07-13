@@ -138,21 +138,21 @@ end
 function m.round(num, places)
   if places and places > 0 then
     local pow = m.DEC10[places] or (10 ^ places)
-    local floor = floor(num * pow)
-    local norm = num - floor
+    local fl = floor(num * pow)
+    local norm = num - fl
 
     if norm >= 0.5 then
-      return (floor + 1) / pow
+      return (fl + 1) / pow
     else
-      return floor / pow
+      return fl / pow
     end
   else
-    local floor = floor(num)
-    local norm = num - floor
+    local fl = floor(num)
+    local norm = num - fl
     if norm >= 0.5 then
-      return floor + 1
+      return fl + 1
     else
-      return floor
+      return fl
     end
   end
 end

@@ -21,7 +21,7 @@ do
     local abw = 0
     local bw
     local err
-    local len = 0
+    local len
     if self.len >= 0 then
       len = self.len
     else
@@ -48,7 +48,7 @@ do
   function ic:read(byte_buf, stream)
     local abr = 0
     local br
-    local len = 0
+    local len
     if self.len >= 0 then
       len = self.len
     else

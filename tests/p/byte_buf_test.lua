@@ -204,7 +204,9 @@ for _, E in ipairs({ "BE", "LE" }) do
     e_case:describe("#w_u8bool", function (t2)
       t2:test("can encode a boolean", function (t3)
         local stream = StringBuffer:new("", "w")
+        local v
         local bw
+        local br
         bw = M:w_u8bool(stream, true)
         t3:assert_eq(bw, 1)
         bw = M:w_u8bool(stream, false)

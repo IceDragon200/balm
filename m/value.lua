@@ -28,7 +28,7 @@ function m.inspect(root, ctx, is_raw)
   }
 
   local function maybe_ref_write(value)
-    ref_id = ctx.refs[value]
+    local ref_id = ctx.refs[value]
     if ref_id == nil then
       ctx.ref_id = ctx.ref_id + 1
       ctx.refs[value] = ctx.ref_id

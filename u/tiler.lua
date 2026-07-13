@@ -26,7 +26,7 @@ do
   local function translate_quad(quad, nx, ny)
     local tw, th = quad:getTextureDimensions()
     local sx, sy, sw, sh = quad:getViewport()
-    return love.graphics.newQuad(sx + nx, sy + ny, nw or sw, nh or sh, tw, th)
+    return love.graphics.newQuad(sx + nx, sy + ny, sw, sh, tw, th)
   end
 
   local function build_quads_for_layout(layout, entry)
@@ -182,7 +182,7 @@ do
           q[1], q[2], q[3] = q2[7], q2[8], q2[9]
         end
       else
-        error("component does not exists vanity_id=" .. component.base)
+        error("component does not exists vanity_id=" .. components.base)
       end
     else
       error("unexpected components")
@@ -194,7 +194,7 @@ do
       for _, override in ipairs(components.overrides) do
         entry = self.components[override.vanity_id]
 
-        for source_index, replacement_index in pairs(overrides.quads) do
+        for source_index, replacement_index in pairs(override.quads) do
           replacement = entry.quads[entry.layout][replacement_index]
           q[source_index] = replacement
         end

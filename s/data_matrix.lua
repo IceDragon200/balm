@@ -145,9 +145,9 @@ do
 
   function ic:index_to_xyz(i1)
     local i = i1 - 1
-    x = math.floor(i % self.m_w)
-    y = math.floor((i / self.m_w) % self.m_h)
-    z = math.floor((i / self.m_h) / self.m_w)
+    local x = math.floor(i % self.m_w)
+    local y = math.floor((i / self.m_w) % self.m_h)
+    local z = math.floor((i / self.m_h) / self.m_w)
     return x, y, z
   end
 

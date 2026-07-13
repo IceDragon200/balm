@@ -37,7 +37,7 @@ do
   --- @spec #initialize_from_object(other: Object): void
   function ic:initialize_from_object(other)
     if other:is_instance_of(Deque) then
-      self:merge(data)
+      self:merge(other.m_data)
     else
       error("unexpected object")
     end

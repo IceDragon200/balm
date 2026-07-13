@@ -43,7 +43,7 @@ do
     local mantissa_size = FLT_TABLE[mantissa_bits]
     local exponent_size = FLT_TABLE[exponent_bits]
 
-    local n = self:d_iv(bytes, len, int)
+    local n = self:d_iv(bytes, len)
     if n == 0 then
       return n, len
     end

@@ -9,7 +9,6 @@ local atan2 = assert(math.atan2 or math.atan)
 --- @module balm.u.dir8
 local Dir8 = {
   DIRECTIONS = {
-    [5] = table_freeze(Vector2.new(0, 0)),
     [1] = table_freeze(Vector2.new(-1, 1)),
     [2] = table_freeze(Vector2.new(0, 1)),
     [3] = table_freeze(Vector2.new(1, 1)),

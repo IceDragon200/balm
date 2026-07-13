@@ -2,12 +2,10 @@ local assertions = require("balm/m/assertions")
 local ByteDecoder = require("balm/p/byte_decoder")
 local ByteEncoder = require("balm/p/byte_encoder")
 local SC = require("balm/encoding_tables").BYTE2CHAR
-local bit = require("balm/u/bit")
 local Object = require("balm/object")
 local Limits = require("balm/limits")
-local floor = math.floor
+local table_length = assert(require("balm/m/table").length)
 local ceil = math.ceil
-local table_concat = table.concat
 
 --- @namespace balm.p.ByteBuf
 local ByteBuf = {}
@@ -359,7 +357,7 @@ do
   --- ): (Integer, error: String | nil)
   function ic:w_map(stream, key_type, value_type, data)
     -- length
-    local len = foundation.com.table_length(data)
+    local len = table_length(data)
     -- number of items in the map
     local num_bytes = self:w_u32(stream, len)
     local writer_name = "w_" .. value_type
