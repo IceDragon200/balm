@@ -50,7 +50,6 @@ function m.inspect(root, ctx, is_raw)
       return root:inspect(ctx)
     end
 
-    local ref_id
     local idx = 0
     buf:write("{")
     for key, value in pairs(root) do

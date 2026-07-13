@@ -41,6 +41,7 @@ case:describe("#write_integer/3", function (t2)
       bw, err = mv:write(BB, s, item[1])
       -- we have no idea what it did, but it should write something greater than 1
       t3:assert(bw > 1)
+      t3:refute(err)
     end
     s:open("r")
     local code
@@ -127,6 +128,7 @@ case:describe("#write/3", function (t2)
       bw, err = mv:write(BB, s, item)
       -- we have no idea what it did, but it should write something greater than 1
       t3:assert(bw > 1)
+      t3:refute(err)
     end
     s:open("r")
     for _,item in ipairs(samples) do
@@ -150,6 +152,7 @@ case:describe("#write/3", function (t2)
       bw, err = mv:write(BB, s, item)
       -- we have no idea what it did, but it should write something greater than 1
       t3:assert(bw > 1)
+      t3:refute(err)
     end
     s:open("r")
     for _,item in ipairs(samples) do
@@ -173,6 +176,7 @@ case:describe("#write/3", function (t2)
       bw, err = mv:write(BB, s, item)
       -- we have no idea what it did, but it should write something greater than 1
       t3:assert(bw > 1)
+      t3:refute(err)
     end
     s:open("r")
     for _,item in ipairs(samples) do

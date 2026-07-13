@@ -6,6 +6,8 @@ local case = Luna:new("balm.u.Spring")
 case:describe("#initialize/0", function (t2)
   t2:test("can initialize a new spring object without parameters", function (t3)
     local s = M:new()
+
+    t3:assert(s)
   end)
 end)
 

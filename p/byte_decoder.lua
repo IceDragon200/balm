@@ -72,7 +72,7 @@ do
     else
       local exponent = floor(biased_exponent - bias)
       local fraction = 1.0 + (mantissa / mantissa_size)
-      flt = fraction * (FLT_TABLE[exponent] or pow(2, exponent))
+      flt = fraction * (FLT_TABLE[exponent] or (2 ^ exponent))
     end
 
     -- Apply the sign bit marker

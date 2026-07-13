@@ -23,7 +23,7 @@ end
 local function translate_quad(quad, nx, ny)
   local tw, th = quad:getTextureDimensions()
   local sx, sy, sw, sh = quad:getViewport()
-  return love.graphics.newQuad(sx + nx, sy + ny, nw or sw, nh or sh, tw, th)
+  return love.graphics.newQuad(sx + nx, sy + ny, sw, sh, tw, th)
 end
 
 --- @spec create_border(SpriteBatch, target_rect: Rect, src_rect: Rect, thicknesses: Table, options: Table): SpriteBatch
@@ -70,8 +70,8 @@ function WindowSkin.create_border(sprite_batch, target_rect, src_rect, thickness
   local mid_segs_w = inner_w - scw * 2
   local mid_segs_h = inner_h - sch * 2
 
-  local horz_segs = math.floor(inner_w / scw)
-  local vert_segs = math.floor(inner_h / sch)
+  -- local horz_segs = math.floor(inner_w / scw)
+  -- local vert_segs = math.floor(inner_h / sch)
 
   local horz_rest = math.max(0, mid_segs_w) % scw
   local vert_rest = math.max(0, mid_segs_h) % sch
@@ -85,12 +85,12 @@ function WindowSkin.create_border(sprite_batch, target_rect, src_rect, thickness
   local sscht = sch
   local sschb = sch
 
-  hiw = math.floor(inner_w / 2)
+  local hiw = math.floor(inner_w / 2)
   if hiw < scw then
     sscwl = hiw
     sscwr = inner_w - hiw
   end
-  hih = math.floor(inner_h / 2)
+  local hih = math.floor(inner_h / 2)
   if inner_h / 2 < sch then
     sscht = hih
     sschb = inner_h - hih
@@ -215,29 +215,32 @@ function WindowSkin.repeat_fill(sprite_batch, target_rect, src_rect, _unsued, op
   local nq = love.graphics.newQuad
 
   local dy = target_rect.y
+  local dx
+  local rep_quad
+  local rest_quad
   if row_segments > 0 then
     for _i = 1,row_segments do
-      local dx = target_rect.x
+      dx = target_rect.x
       if col_segments > 0 then
-        local rep_quad = nq(sx, sy, sw, sh, image_w, image_h)
-        for _i=1,col_segments do
+        rep_quad = nq(sx, sy, sw, sh, image_w, image_h)
+        for _j=1,col_segments do
           sprite_batch:add(rep_quad, dx, dy)
           dx = dx + sw
         end
       end
       if col_rest > 0 then
-        local rest_quad = nq(sx, sy, col_rest, sh, image_w, image_h)
+        rest_quad = nq(sx, sy, col_rest, sh, image_w, image_h)
         sprite_batch:add(rest_quad, dx, dy)
-        dx = dx + col_rest
+        -- dx = dx + col_rest
       end
       dy = dy + sh
     end
   end
   if row_rest > 0 then
-    local dx = target_rect.x
+    dx = target_rect.x
 
     if col_segments > 0 then
-      local rep_quad = nq(sx, sy, sw, row_rest, image_w, image_h)
+      rep_quad = nq(sx, sy, sw, row_rest, image_w, image_h)
       for _i=1,col_segments do
         sprite_batch:add(rep_quad, dx, dy)
         dx = dx + sw
@@ -245,9 +248,9 @@ function WindowSkin.repeat_fill(sprite_batch, target_rect, src_rect, _unsued, op
     end
 
     if col_rest > 0 then
-      local rest_quad = nq(sx, sy, col_rest, row_rest, image_w, image_h)
+      rest_quad = nq(sx, sy, col_rest, row_rest, image_w, image_h)
       sprite_batch:add(rest_quad, dx, dy)
-      dx = dx + col_rest
+      -- dx = dx + col_rest
     end
   end
   return sprite_batch
@@ -265,8 +268,6 @@ end
 
 function WindowSkin.create_from_3x1(sprite_batch, target_rect, src_rect, _unsued, options)
   assert(sprite_batch, "expected a sprite_batch")
-  options = options or {}
-
   local cell_w = src_rect.w / 3
 
   -- image sizes
@@ -276,7 +277,7 @@ function WindowSkin.create_from_3x1(sprite_batch, target_rect, src_rect, _unsued
   -- source rectangle coords and sizes
   local sx = src_rect.x
   local sy = src_rect.y
-  local sw = src_rect.w
+  -- local sw = src_rect.w
   local sh = src_rect.h
 
   local cell_h = math.min(target_rect.h, sh)
@@ -333,7 +334,7 @@ function WindowSkin.create_from_1x3(sprite_batch, target_rect, src_rect, _unsued
   local sx = src_rect.x
   local sy = src_rect.y
   local sw = src_rect.w
-  local sh = src_rect.h
+  -- local sh = src_rect.h
 
   local cell_w = math.min(target_rect.w, sw)
   -- alias
@@ -556,8 +557,8 @@ function WindowSkin.create_from_3x3(sprite_batch, target_rect, src_rect, _unsued
   end
   -- bottom-right
   sprite_batch:add(translate_quad(resize_quad(q[3], rew, beh), rexo, beyo), dx, dy)
-  dy = dy + beh
-  dx = dx + rew
+  -- dy = dy + beh
+  -- dx = dx + rew
   return sprite_batch
 end
 

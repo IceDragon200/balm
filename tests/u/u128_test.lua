@@ -16,7 +16,9 @@ end)
 
 case:describe("#initialize/0", function (t2)
   t2:test("can initialize a new instance", function (t3)
-    local _i = m:new()
+    local i = m:new()
+
+    t3:assert(i)
   end)
 end)
 

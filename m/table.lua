@@ -397,8 +397,6 @@ end
 --- @since "1.31.0"
 --- @spec find(t: Table<K, V>, (key: K, value: V) => Boolean): (key: K | nil, value: V | nil)
 function m.find(t, predicate)
-  local result = {}
-
   for key, value in pairs(t) do
     if predicate(key, value) then
       return key, value

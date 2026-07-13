@@ -4,7 +4,6 @@ local pack_v2 = pack.pack_v2
 local unpack_v2 = pack.unpack_v2
 local ceil = assert(math.ceil)
 local floor = assert(math.floor)
-local max = assert(math.max)
 local min = assert(math.min)
 local abs = assert(math.abs)
 local atan2 = assert(math.atan2 or math.atan)

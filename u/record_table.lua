@@ -241,7 +241,7 @@ do
     for id, entry in pairs(self.data) do
       acc = callback(entry, id, acc)
     end
-    return A
+    return acc
   end
 
   --- @since "2026.6.29"

@@ -31,6 +31,7 @@ case:describe("#initialize/4", function (t2)
     end)
 
     t3:assert(called, "expected callback to have been executed")
+    t3:assert(s, "expected a data matrix")
   end)
 end)
 
@@ -138,8 +139,8 @@ case:describe("#map/1", function (t2)
 
     local org = s:copy()
 
-    s:map(function (x, y, z, i, d)
-      return d + 1
+    s:map(function (x, y, z, i, da)
+      return da + 1
     end)
 
     for i = 1,s:volume() do

@@ -1,6 +1,5 @@
 local table_copy = assert(require("balm/m/table").copy)
 local Object = require("balm/object")
-local U128 = require("balm/u/u128")
 
 --- @class IDGenerator
 local IDGenerator = Object:extends("balm.u.IDGenerator")

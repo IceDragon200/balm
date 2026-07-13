@@ -29,7 +29,7 @@ case:describe("general usage", function (t2)
 
     t3:assert_eq(s:is_track_empty(1), false)
 
-    for x = 1,1000 do
+    for i = 1,1000 do
       s:update(0.05)
     end
 

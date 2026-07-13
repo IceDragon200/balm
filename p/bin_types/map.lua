@@ -45,6 +45,7 @@ do
     local br
     local len
     len, br = byte_buf:r_u32(stream)
+    abr = abr + br
     if len then
       local result = {}
       local k

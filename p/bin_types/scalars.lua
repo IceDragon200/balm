@@ -1,5 +1,3 @@
-local Object = require("balm/object")
-
 local ScalarTypes = {
   -- Signed Integers
   i8 = {},

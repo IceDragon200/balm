@@ -49,8 +49,11 @@ do
   function ic:save_table()
     local buffer = StringBuffer:new("", "w")
 
+    local success
+    local bw
+    local err
     -- MMAP - Marshall Map
-    local bytes_written, err = MMAPSchema:write(buffer, {
+    bw, err = MMAPSchema:write(buffer, {
       magic = "MMAP",
       version = 1,
       timestamp = 0,
@@ -59,7 +62,8 @@ do
     if err then
       error(err)
     end
-    local success, err = self.m_file:open("w")
+    assert(bw > 0)
+    success, err = self.m_file:open("w")
     if success then
       print("VTAB", "saving table", self.file:getFilename())
       self.m_file:write(buffer.data);

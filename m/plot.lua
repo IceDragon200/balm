@@ -179,9 +179,6 @@ function m.plot_line3_inline(x1, y1, z1, x2, y2, z2, callback)
   local dz = math.abs(z2 - z1)
   local dm = math.max(dx, math.max(dy, dz))
   local i = dm
-  local x
-  local y
-  local z
   local sx = 1
   local sy = 1
   local sz = 1

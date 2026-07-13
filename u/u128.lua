@@ -239,7 +239,7 @@ do
       local o_c = carry % U32
       local o_d = floor(carry / U32) % U32
 
-      local borrow = 0
+      local borrow
 
       local diff_a = self.a - o_a
       if diff_a < 0 then
@@ -317,16 +317,16 @@ do
     low, carry = mul32x32(self.a, other.a); r_a = r_a + low; r_b = r_b + carry
     low, carry = mul32x32(self.a, other.b); r_b = r_b + low; r_c = r_c + carry
     low, carry = mul32x32(self.a, other.c); r_c = r_c + low; r_d = r_d + carry
-    low, carry = mul32x32(self.a, other.d); r_d = r_d + low
+    low = mul32x32(self.a, other.d); r_d = r_d + low
 
     low, carry = mul32x32(self.b, other.a); r_b = r_b + low; r_c = r_c + carry
     low, carry = mul32x32(self.b, other.b); r_c = r_c + low; r_d = r_d + carry
-    low, carry = mul32x32(self.b, other.c); r_d = r_d + low
+    low = mul32x32(self.b, other.c); r_d = r_d + low
 
     low, carry = mul32x32(self.c, other.a); r_c = r_c + low; r_d = r_d + carry
-    low, carry = mul32x32(self.c, other.b); r_d = r_d + low
+    low = mul32x32(self.c, other.b); r_d = r_d + low
 
-    low, carry = mul32x32(self.d, other.a); r_d = r_d + low
+    low = mul32x32(self.d, other.a); r_d = r_d + low
 
     local carry_v = 0
     r_a = r_a + carry_v; carry_v = floor(r_a / U32); self.a = r_a % U32

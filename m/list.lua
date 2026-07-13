@@ -1,7 +1,6 @@
 local floor = assert(math.floor)
 local random = assert(math.random)
 local min = assert(math.min)
-local max = assert(math.max)
 
 --- @namespace balm.m.list
 local m = {}
@@ -364,8 +363,6 @@ end
 ---   (value: V, index: K) => Boolean
 --- ): (value: V | nil, index: K | nil)
 function m.find(t, predicate)
-  local result = {}
-
   for index, value in ipairs(t) do
     if predicate(value, index) then
       return value, index

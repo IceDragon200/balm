@@ -23,7 +23,7 @@ function m.setup_global_warning()
     return
   end
 
-  local debug_getinfo, rawget, rawset = debug.getinfo, rawget, rawset
+  local debug_getinfo, rawset = debug.getinfo, rawset
 
   local meta = {}
   local declared = {}

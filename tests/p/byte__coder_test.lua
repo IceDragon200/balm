@@ -1,5 +1,4 @@
 local Luna = require("balm/luna")
-local round = require("balm/m/number").round
 local bit = require("balm/u/bit")
 local ByteD = require("balm/p/byte_decoder")
 local ByteE = require("balm/p/byte_encoder")

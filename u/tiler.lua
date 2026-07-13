@@ -1,7 +1,6 @@
 local assertions = require("balm/m/assertions")
 local Object = require("balm/object")
 local Rect = require("balm/m/rect")
-local WindowSkin = require("balm/u/window_skin")
 local floor = assert(math.floor)
 
 --- @type Layout = "1x1" | "1x3" | "3x1" | "3x3" | "6x6" | "border" | "horz" | "vert"
@@ -148,9 +147,7 @@ do
   --- ): SpriteBatch
   function ic:build_component(sprite_batch, target_rect, components, _thicknesses, options)
     assert(Rect.is_rect_like(target_rect), "expected a rect for target_rect")
-    options = options or {}
 
-    local nq = assert(love.graphics.newQuad)
     -- 789
     -- 456
     -- 123
@@ -212,7 +209,7 @@ do
     -- i.e. base quad cell sizes
     local quad_params = {}
     for i, quad in pairs(q) do
-      local x, y, cw, ch = quad:getViewport()
+      local _x, _y, cw, ch = quad:getViewport()
       quad_params[i] = { ox = 0, oy = 0, w = cw, h = ch }
     end
 
@@ -332,7 +329,7 @@ do
         end
         if qcs[5].lw > 0 then
           sprite_batch:add(resize_quad(q5, qcs[5].lw, qcs[5].h), dx, dy)
-          dx = dx + qcs[5].lw
+          -- dx = dx + qcs[5].lw
         end
         dy = dy + qcs[5].h
       end
@@ -348,7 +345,7 @@ do
       end
       if qcs[5].lw > 0 then
         sprite_batch:add(resize_quad(q[5], qcs[5].lw, qcs[5].lh), dx, dy)
-        dx = dx + qcs[5].lw
+        -- dx = dx + qcs[5].lw
       end
     end
 
@@ -380,7 +377,7 @@ do
     )
     dx = qcs[2].x
     dy = qcs[2].y
-    local tmq = resize_quad(q[2], qcs[2].w, qcs[2].h)
+    tmq = resize_quad(q[2], qcs[2].w, qcs[2].h)
     if qcs[2].c > 0 then
       for _=1,qcs[2].c do
         sprite_batch:add(tmq, dx, dy)
@@ -393,7 +390,7 @@ do
         dx,
         dy
       )
-      dx = dx + qcs[2].lw
+      -- dx = dx + qcs[2].lw
     end
     dx = qcs[3].x
     dy = qcs[3].y

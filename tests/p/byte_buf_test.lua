@@ -1,5 +1,4 @@
 local Luna = require("balm/luna")
-local round = require("balm/m/number").round
 local StringBuffer = require("balm/u/string_buffer")
 local bit = require("balm/u/bit")
 local Limits = require("balm/limits")
@@ -17,10 +16,13 @@ for _, E in ipairs({ "BE", "LE" }) do
         local bw, err
         bw, err = M:write(stream, 0)
         t3:assert(bw > 0)
+        t3:refute(err)
         bw, err = M:write(stream, 128)
         t3:assert(bw > 0)
+        t3:refute(err)
         bw, err = M:write(stream, 255)
         t3:assert(bw > 0)
+        t3:refute(err)
         stream:open("r")
         t3:assert_eq(M:read(stream, 1), "\0")
         t3:assert_eq(M:read(stream, 1), "\128")
@@ -32,6 +34,7 @@ for _, E in ipairs({ "BE", "LE" }) do
         local bw, err
         bw, err = M:write(stream, -1)
         t3:assert(bw == 0)
+        t3:assert(err)
       end)
     end)
 
@@ -44,14 +47,17 @@ for _, E in ipairs({ "BE", "LE" }) do
           local bw, err
           bw, err = M[wfn](M, stream, 0)
           t3:assert(bw > 0)
+          t3:refute(err)
 
           -- N-1
           bw, err = M[wfn](M, stream, bit.BIT_TABLE[bits - 1])
           t3:assert(bw > 0)
+          t3:refute(err)
 
           -- Maximum
           bw, err = M[wfn](M, stream, bit.BIT_TABLE[bits] - 1)
           t3:assert(bw > 0)
+          t3:refute(err)
 
           stream:open("r")
 
@@ -74,6 +80,7 @@ for _, E in ipairs({ "BE", "LE" }) do
             data[i] = b
             bw, err = M[wfn](M, stream, b)
             t3:assert(bw > 0)
+            t3:refute(err)
           end
 
           stream:open("r")
@@ -90,21 +97,24 @@ for _, E in ipairs({ "BE", "LE" }) do
 
       e_case:describe("#w_i"..bits.."/2", function (t2)
         t2:test("can write an signed number", function (t3)
-          local w = math.floor(bits / 8)
+          -- local w = math.floor(bits / 8)
           local wfn = "w_i"..bits
           local rfn = "r_i"..bits
           local stream = StringBuffer:new("", "w")
           local bw, err
           bw, err = M[wfn](M, stream, 0)
           t3:assert(bw > 0)
+          t3:refute(err)
 
           -- Max
           bw, err = M[wfn](M, stream, bit.BIT_TABLE[bits - 1] - 1)
           t3:assert(bw > 0)
+          t3:refute(err)
 
           -- Min
           bw, err = M[wfn](M, stream, -bit.BIT_TABLE[bits - 1])
           t3:assert(bw > 0)
+          t3:refute(err)
 
           stream:open("r")
 
@@ -127,6 +137,7 @@ for _, E in ipairs({ "BE", "LE" }) do
             data[i] = b
             bw, err = M[wfn](M, stream, b)
             t3:assert(bw > 0)
+            t3:refute(err)
           end
 
           stream:open("r")
@@ -145,13 +156,14 @@ for _, E in ipairs({ "BE", "LE" }) do
     for _, bits in ipairs({ 32, 64 }) do
       e_case:describe("#w_f"..bits.."/2", function (t2)
         t2:test("can write a floating-point number", function (t3)
-          local w = math.floor(bits / 8)
+          -- local w = math.floor(bits / 8)
           local wfn = assert(M["w_f"..bits])
           local rfn = assert(M["r_f"..bits])
           local stream = StringBuffer:new("", "w")
           local bw, err
           bw, err = wfn(M, stream, 0)
           t3:assert(bw > 0)
+          t3:refute(err)
 
           local mx = Limits.IMAX[17]
           local mn = Limits.IMIN[17]
@@ -159,11 +171,13 @@ for _, E in ipairs({ "BE", "LE" }) do
           -- bw, err = wfn(M, stream, Limits.FMAX[bits])
           bw, err = wfn(M, stream, mx)
           t3:assert(bw > 0)
+          t3:refute(err)
 
           -- Min
           -- bw, err = wfn(M, stream, Limits.FMIN[bits])
           bw, err = wfn(M, stream, mn)
           t3:assert(bw > 0)
+          t3:refute(err)
 
           stream:open("r")
 
@@ -186,6 +200,7 @@ for _, E in ipairs({ "BE", "LE" }) do
             data[i] = b
             bw, err = wfn(M, stream, b)
             t3:assert(bw > 0)
+            t3:refute(err)
           end
 
           stream:open("r")

@@ -2,6 +2,12 @@
 --- StringBuffer is an in-memory equivalent of love's File interface
 ---
 local Object = require("balm/object")
+local table_concat = assert(table.concat)
+local table_insert = assert(table.insert)
+local min = assert(math.min)
+local string_find = assert(string.find)
+local string_byte = assert(string.byte)
+local string_sub = assert(string.sub)
 
 --- @namespace balm.u
 
@@ -52,7 +58,7 @@ do
   end
 
   function ic:find(pattern)
-    return string.find(self.data, pattern, self.cursor)
+    return string_find(self.data, pattern, self.cursor)
   end
 
   function ic:scan(pattern)
@@ -77,14 +83,17 @@ do
   function ic:scan_while(pattern)
     local k = self:tell()
     local result = {}
+    local str
+    local i
+    local j
     while not self:isEOF() do
-      local i, j = self:find(pattern)
+      i, j = self:find(pattern)
       if i then
-        local str = self:read(j - k + 1)
-        local k = self:tell()
-        table.insert(result, str)
+        str = self:read(j - k + 1)
+        k = self:tell()
+        table_insert(result, str)
       else
-        return table.concat(result)
+        return table_concat(result)
       end
     end
     return nil
@@ -113,32 +122,32 @@ do
   function ic:calc_read_length(len)
     assert(self.mode == "r" or self.mode == "rw", "expected read mode")
     local remaining_len = #self.data - self.cursor + 1
-    local len = math.min(len or remaining_len, remaining_len)
+    len = min(len or remaining_len, remaining_len)
     return len
   end
 
   function ic:peek_bytes(len)
-    local len = self:calc_read_length(len)
-    return string.byte(self.data, self.cursor, self.cursor + len - 1), len
+    len = self:calc_read_length(len)
+    return string_byte(self.data, self.cursor, self.cursor + len - 1), len
   end
 
   function ic:read_bytes(len)
-    local len = self:calc_read_length(len)
+    len = self:calc_read_length(len)
     local pos = self.cursor
     self.cursor = self.cursor + len
-    return string.byte(self.data, pos, pos + len - 1), len
+    return string_byte(self.data, pos, pos + len - 1), len
   end
 
   function ic:peek(len)
-    local len = self:calc_read_length(len)
-    return string.sub(self.data, self.cursor, self.cursor + len - 1), len
+    len = self:calc_read_length(len)
+    return string_sub(self.data, self.cursor, self.cursor + len - 1), len
   end
 
   function ic:read(len)
-    local len = self:calc_read_length(len)
+    len = self:calc_read_length(len)
     local pos = self.cursor
     self.cursor = self.cursor + len
-    return string.sub(self.data, pos, pos + len - 1), len
+    return string_sub(self.data, pos, pos + len - 1), len
   end
 
   --- @spec #write(data: String): (Boolean, err: String)
@@ -150,12 +159,12 @@ do
     local final_cursor = self.cursor + len
     if final_cursor < current_len then
       -- the final cursor is still inside the string
-      local head = string.sub(self.data, 1, self.cursor)
-      local tail = string.sub(self.data, final_cursor, current_len)
+      local head = string_sub(self.data, 1, self.cursor)
+      local tail = string_sub(self.data, final_cursor, current_len)
       self.data = head .. data .. tail
     else
       -- the data will overwrite a section of the existing data and add new data
-      self.data = string.sub(self.data, 1, self.cursor)
+      self.data = string_sub(self.data, 1, self.cursor)
       self.data = self.data .. data
     end
     self.cursor = final_cursor

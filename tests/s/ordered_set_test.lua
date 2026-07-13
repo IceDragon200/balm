@@ -244,6 +244,7 @@ case:describe("#each/1", function (t2)
       b:insert(x)
     end)
     t3:assert_table_eq({"1", "2", "3", "4"}, b:to_table())
+    t3:assert(item)
   end)
 end)
 
