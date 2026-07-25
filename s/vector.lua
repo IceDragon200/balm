@@ -227,7 +227,7 @@ do
   --- @alias mod = modulo
   ic.mod = ic.modulo
 
-  --- Modulo vector a by b and stores the result in the callee.
+  --- Perform a exponent operation with a and b storing the result in self.
   --- @spec #exponent(a: Vector, b: Vector): self
   function ic:exponent(a, b)
     local len = min(min(self.m_size, a.m_size), b.m_size)

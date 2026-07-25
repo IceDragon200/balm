@@ -80,8 +80,10 @@ function m.inspect(root, ctx, is_raw)
     else
       return string_format("%f", root)
     end
-  else
+  elseif ty == "string" then
     return string_format("%q", root)
+  else
+    return tostring(root)
   end
 end
 

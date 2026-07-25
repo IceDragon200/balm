@@ -1,3 +1,7 @@
+# 2026.7.25
+
+* Check for %p support and add it to sys.capabilities.string_format_p
+
 # 2026.7.12
 
 * Fixed some bugs surfaced from a luacheck

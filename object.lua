@@ -1,4 +1,5 @@
 --- @namespace balm
+local SYS = require("balm/sys")
 local Value = require("balm/m/value")
 local rawmatches = assert(Value.rawmatches)
 local inspect = assert(Value.inspect)
@@ -43,19 +44,44 @@ setmetatable(Object, Object.__mt)
 Object.instance_class._class = Object
 Object.__imt.__index = Object.instance_class
 
---- @since "2026.5.9"
-local function default_inspect(self, ctx)
-  return string.format("#<%s:%p %s>", self._class._name, self, inspect(self, ctx, true))
-end
+local default_inspect
+local default_class_to_string
+local default_instance_to_string
 
---- @since "2026.5.9"
-local function default_class_to_string(self)
-  return string.format("Class<%s:%p>", self._name, self)
-end
+if string.format then
+  local string_format = assert(string.format)
 
---- @since "2026.5.9"
-local function default_instance_to_string(self)
-  return string.format("#<%s:%p>", self._class._name, self)
+  if SYS.capabilities.string_format_p then
+    --- @since "2026.5.9"
+    function default_inspect(self, ctx)
+      return string_format("#<%s:%p %s>", self._class._name, self, inspect(self, ctx, true))
+    end
+
+    --- @since "2026.5.9"
+    function default_class_to_string(self)
+      return string_format("Class<%s:%p>", self._name, self)
+    end
+
+    --- @since "2026.5.9"
+    function default_instance_to_string(self)
+      return string_format("#<%s:%p>", self._class._name, self)
+    end
+  else
+    --- @since "2026.5.9"
+    function default_inspect(self, ctx)
+      return string_format("#<%s:X %s>", self._class._name, inspect(self, ctx, true))
+    end
+
+    --- @since "2026.5.9"
+    function default_class_to_string(self)
+      return string_format("Class<%s:X>", self._name)
+    end
+
+    --- @since "2026.5.9"
+    function default_instance_to_string(self)
+      return string_format("#<%s:X>", self._class._name)
+    end
+  end
 end
 
 do

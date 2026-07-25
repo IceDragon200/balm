@@ -1,6 +1,17 @@
 --- @namespace balm.sys
 local m = {}
 
+--- @const capabilities: Table
+m.capabilities = {}
+m.capabilities.string_format = pcall(function ()
+  string.format("%s", "test")
+  return true
+end)
+m.capabilities.string_format_p = pcall(function ()
+  string.format("%p", {})
+  return true
+end)
+
 --- @spec can_require(name: String): (exists: true, path: String) | (exists: false, err: Any)
 function m.can_require(name)
   if package.loaded[name] ~= nil then

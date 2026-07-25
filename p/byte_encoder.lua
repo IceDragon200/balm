@@ -6,7 +6,7 @@ local SC = require("balm/encoding_tables").BYTE2CHAR
 local bit = require("balm/u/bit")
 local ceil = assert(math.ceil)
 local floor = assert(math.floor)
-local string_pack = assert(string.pack)
+local string_pack = string.pack
 local table_concat = assert(table.concat)
 
 --- @namespace balm.p.ByteEncoder
