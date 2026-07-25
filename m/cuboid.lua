@@ -361,7 +361,7 @@ do
         x1 = c.x
       end
 
-      tmp = c.x + x.w
+      tmp = c.x + c.w
       if x2 then
         if tmp > x2 then
           x2 = tmp
@@ -378,7 +378,7 @@ do
         y1 = c.y
       end
 
-      tmp = c.y + x.h
+      tmp = c.y + c.h
       if y2 then
         if tmp > y2 then
           y2 = tmp
@@ -395,7 +395,7 @@ do
         z1 = c.z
       end
 
-      tmp = c.z + x.d
+      tmp = c.z + c.d
       if z2 then
         if tmp > z2 then
           z2 = tmp

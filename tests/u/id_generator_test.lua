@@ -1,0 +1,32 @@
+local Luna = require("balm/luna")
+local Subject = require("balm/u/id_generator")
+
+local case = Luna:new("balm.u.IDGenerator")
+
+case:describe("#initialize/1", function (t2)
+  t2:test("can initialize an id generator", function (t3)
+    local a = Subject:new()
+    t3:assert(a)
+  end)
+end)
+
+case:describe("#next/1", function (t2)
+  t2:test("can generate an id and set a vanity_id", function (t3)
+    local a = Subject:new()
+
+    local id = a:next()
+    t3:assert(id)
+    local id2 = a:next("vanity")
+    t3:assert_eq(type(id), "number")
+    t3:assert_eq(type(id2), "number")
+    t3:assert(id2)
+    t3:refute_eq(id, id2)
+    t3:assert_eq(a:get_vanity(id), nil)
+    t3:assert_eq(a:get_vanity(id2), "vanity")
+    t3:assert_eq(a:get_id("vanity"), id2)
+  end)
+end)
+
+case:execute()
+case:display_stats()
+case:maybe_error()

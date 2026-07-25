@@ -1,3 +1,4 @@
+local Vector2 = require("balm/m/vector/2")
 local number_round = require("balm/m/number").round
 
 --- @namespace balm.m.rect
@@ -5,30 +6,59 @@ local number_round = require("balm/m/number").round
 --
 -- Rect(angles) are a 2d shape representation
 --
-local Rect = {}
+local pargs = { "x", "y", "w", "h" }
+
+local Rect
+Rect = {
+  metatable = {
+    __index = function (v, key)
+      local x = rawget(v, pargs[key])
+      if x == nil then
+        return Rect[key]
+      end
+      return x
+    end,
+
+    __newindex = function (v, key, value)
+      rawset(v, pargs[key] or key, value)
+    end,
+  },
+}
+
+--- @since "2026.5.7"
+--- @spec is_rect_like(obj: Any1: Boolean)
+function Rect.is_rect_like(obj)
+  if type(obj) == "table" then
+    if type(obj.x) == "number" and type(obj.y) == "number"
+       and type(obj.w) == "number" and type(obj.h) == "number" then
+      return true
+    end
+  end
+  return false
+end
 
 --- Create a new rectangle with all 4 components specified
 ---
 --- @spec new(x?: Number, y?: Number, w?: Number, h?: Number): Rect
 function Rect.new(x, y, w, h)
-  return {
+  return setmetatable({
     x = x or 0,
     y = y or 0,
     w = w or 0,
     h = h or 0,
-  }
+  }, Rect.metatable)
 end
 
 --- Create a new rectangle with its components specified as 2 vec2 args
 ---
 --- @spec new_from_vec2(Vector2, Vector2): Rect
 function Rect.new_from_vec2(pos, size)
-  return {
-    x = pos.x,
-    y = pos.y,
-    w = size.x,
-    h = size.y
-  }
+  return Rect.new(
+    pos.x,
+    pos.y,
+    size.x,
+    size.y
+  )
 end
 
 --- Create a new rectangle given the extents, that is the top left and bottom right
@@ -42,44 +72,44 @@ function Rect.new_from_extents(pos1, pos2)
   local y1 = math.min(pos1.y, pos2.y)
   local y2 = math.max(pos1.y, pos2.y)
 
-  return {
-    x = x1,
-    y = y1,
-    w = x2 - x1,
-    h = y2 - y1
-  }
+  return Rect.new(
+    x1,
+    y1,
+    x2 - x1,
+    y2 - y1
+  )
 end
 
 --- Copy an existing table as a rect
 ---
 --- @spec copy(Table): Rect
 function Rect.copy(rect)
-  return {
-    x = rect.x,
-    y = rect.y,
-    w = rect.w,
-    h = rect.h
-  }
+  return Rect.new(
+    rect.x,
+    rect.y,
+    rect.w,
+    rect.h
+  )
 end
 
 --- Returns the position of the rect as a vector2
 ---
 --- @spec position(Rect): Vector2
 function Rect.position(rect)
-  return {
-    x = rect.x,
-    y = rect.y,
-  }
+  return Vector2.new(
+    rect.x,
+    rect.y
+  )
 end
 
 --- Returns the size of the rect as a vector2
 ---
 --- @spec size(Rect): Vector2
 function Rect.size(rect)
-  return {
-    x = rect.w,
-    y = rect.h,
-  }
+  return Vector2.new(
+    rect.w,
+    rect.h
+  )
 end
 
 --- @spec area(Rect): Number
@@ -379,6 +409,14 @@ function Rect.contains(rect, other)
          cy2 >= py1 and cy2 <= py2
 end
 
+--- Determines if point falls inside the Rectangle's area.
+--- @since "2026.5.30"
+--- @spec contains_point(rect: Rect, x: Number, y: Number): Boolean
+function Rect.contains_point(rect, x, y)
+  return x >= rect.x and x <= (rect.x + rect.w) and
+         y >= rect.y and y <= (rect.y + rect.h)
+end
+
 --- Determines if `rect` and `other` intersect at any point.
 ---
 --- @spec intersects(rect: Rect, other: Rect): Boolean
@@ -407,6 +445,12 @@ end
 
 --- @spec merge(...Rect): Rect
 function Rect.merge(...)
+  return Rect.merge_into(Rect.new(0, 0, 0, 0), ...)
+end
+
+--- @since "2026.5.30"
+--- @spec merge_into(dest: Rect, ...Rect): Rect
+function Rect.merge_into(dest, ...)
   local len = select('#', ...)
 
   local ix2
@@ -457,12 +501,12 @@ function Rect.merge(...)
     end
   end
 
-  return Rect.new(
-    x1 or 0,
-    y1 or 0,
-    (x2 or 0) - (x1 or 0),
-    (y2 or 0) - (y1 or 0)
-  )
+  dest.x = x1 or 0
+  dest.y = y1 or 0
+  dest.w = (x2 or 0) - (x1 or 0)
+  dest.h = (y2 or 0) - (y1 or 0)
+
+  return dest
 end
 
 return Rect

@@ -1,33 +1,35 @@
-local byte_buf = require("balm/p/byte_buf").LE
 local Object = require("balm/object")
 
+--- @class balm.p.bin_types.Bytes
 local Bytes = Object:extends("Bytes")
-local ic = Bytes.instance_class
+do
+  local ic = Bytes.instance_class
 
-function ic:initialize(length)
-  self.length = length
-end
-
---- @spec #write(File, data: String | nil): (Integer, err: String | nil)
-function ic:write(file, data)
-  assert(file, "expected a file")
-  data = data or ""
-  local payload = string.sub(data, 1, self.length)
-  local actual_length = #payload
-  local padding_needed = self.length - actual_length
-  assert(padding_needed >= 0, "length error")
-  local bytes_written, err = byte_buf:write(file, payload)
-  if err then
-    return bytes_written, err
+  function ic:initialize(length)
+    self.length = length
   end
-  for _ = 1,padding_needed do
-    byte_buf:w_u8(file, 0)
-  end
-  return self.length, nil
-end
 
-function ic:read(file)
-  return byte_buf:read(file, self.length)
+  --- @spec #write(byte_buf: ByteBuf, File, data: String | nil): (Integer, err: String | nil)
+  function ic:write(byte_buf, stream, data)
+    assert(stream, "expected a stream")
+    data = data or ""
+    local payload = string.sub(data, 1, self.length)
+    local actual_length = #payload
+    local padding_needed = self.length - actual_length
+    assert(padding_needed >= 0, "length error")
+    local bytes_written, err = byte_buf:write(stream, payload)
+    if err then
+      return bytes_written, err
+    end
+    for _ = 1,padding_needed do
+      byte_buf:w_u8(stream, 0)
+    end
+    return self.length, nil
+  end
+
+  function ic:read(byte_buf, stream)
+    return byte_buf:read(stream, self.length)
+  end
 end
 
 return Bytes

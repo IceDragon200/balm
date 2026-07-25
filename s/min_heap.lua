@@ -2,6 +2,8 @@
 local Object = require("balm/object")
 local table_copy = require("balm/m/table").copy
 
+local floor = math.floor
+
 --- @since "2025.5.4"
 --- @class MinHeap<T>
 local MinHeap = Object:extends("balm.MinHeap")
@@ -22,18 +24,10 @@ do
   ---
   --- @spec #initialize_copy(other: MinHeap): void
   function ic:initialize_copy(other)
+    ic._super.initialize_copy(self, other)
     self.m_data = table_copy(other.m_data)
     self.m_weights = table_copy(other.m_weights)
     self.m_cursor = other.m_cursor
-  end
-
-  --- Returns a copy of the heap
-  ---
-  --- @spec #copy(): MinHeap<T>
-  function ic:copy()
-    local other = self._class:alloc()
-    other:initialize_copy(self)
-    return other
   end
 
   --- Returns the underlying data as is, this can be used to effectively unwrap
@@ -76,12 +70,12 @@ do
   end
 
   function ic:_sift_up(idx)
-    local pidx = math.floor(idx / 2)
+    local pidx = floor(idx / 2)
     while idx > 1 and self.m_weights[idx] < self.m_weights[pidx] do
       self.m_weights[idx], self.m_weights[pidx] = self.m_weights[pidx], self.m_weights[idx]
       self.m_data[idx], self.m_data[pidx] = self.m_data[pidx], self.m_data[idx]
       idx = pidx
-      pidx = math.floor(idx / 2)
+      pidx = floor(idx / 2)
     end
   end
 

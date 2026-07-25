@@ -34,6 +34,24 @@ case:describe("next_codepoint/1", function (t2)
   end)
 end)
 
+case:describe("next_scalar/1", function (t2)
+  t2:test("reports the next scalar in an empty string", function (t3)
+    t3:assert_eq(nil, mod.next_scalar(""))
+  end)
+
+  t2:test("reports the next scalar in an ASCII string", function (t3)
+    t3:assert_eq(string.byte("H"), mod.next_scalar("Hello", 1))
+    t3:assert_eq(string.byte("e"), mod.next_scalar("Hello", 2))
+    t3:assert_eq(string.byte("l"), mod.next_scalar("Hello", 3))
+    t3:assert_eq(string.byte("l"), mod.next_scalar("Hello", 4))
+    t3:assert_eq(string.byte("o"), mod.next_scalar("Hello", 5))
+  end)
+
+  t2:test("can handle hiragana", function (t3)
+    t3:assert_eq(12373, mod.next_scalar("さよなら"))
+  end)
+end)
+
 case:describe("each_codepoint/2", function (t2)
   t2:test("can iterate over each character in a string", function (t3)
     local idx = 0

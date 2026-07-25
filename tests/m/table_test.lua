@@ -12,6 +12,62 @@ case:describe("concat/1+", function (t2)
   end)
 end)
 
+case:describe("split/2", function (t2)
+  t2:test("can split pairs off a table", function (t3)
+    local tab1 = {
+      name = "John Doe",
+      age = 1000,
+      address = "Somewhere",
+      state = "FL",
+    }
+
+    t3:assert_table_eq(
+      {
+        name = "John Doe",
+        age = 1000,
+      },
+      m.split(tab1, { "name", "age" })
+    )
+
+    t3:assert_table_eq(
+      {
+        address = "Somewhere",
+        state = "FL",
+      },
+      tab1
+    )
+  end)
+end)
+
+case:describe("pop/2", function (t2)
+  t2:test("can remove and return a value from table", function (t3)
+    local tab1 = {
+      name = "John Doe",
+      age = 1000,
+      address = "Somewhere",
+      state = "FL",
+    }
+
+    t3:assert_eq(
+      "John Doe",
+      m.pop(tab1, "name")
+    )
+
+    t3:assert_eq(
+      "FL",
+      m.pop(tab1, "state")
+    )
+
+    t3:assert_table_eq(
+      {
+        age = 1000,
+        address = "Somewhere",
+      },
+      tab1
+    )
+  end)
+end)
+
 case:describe("take/2", function (t2)
   t2:test("can pick out pairs from a table by keys", function (t3)
     local tab1 = {

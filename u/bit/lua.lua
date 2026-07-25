@@ -1,17 +1,20 @@
---- @namespace balm.m.bit
+local table_freeze = assert(require("balm/m/table").freeze)
+local Limits = require("balm/limits")
+
+--- @namespace balm.u.bit
 --
 -- Balm bit module
 --
--- In case the ffi bit is available, then this module acts as a wrapper around it
+-- In case the ffi bit isn't available, then this module acts as a wrapper around it
 -- Otherwise it will try it's best to implement the module in plain lua.
 --
 local BITS = 32
-local UINT32_MAX = 0xFFFFFFFF
-local INT32_MAX = 0x7FFFFFFF
+local UINT32_MAX = Limits.UMAX[32]
+local INT32_MAX = Limits.IMAX[32]
 -- local INT32_MIN = -0x80000000
 
 -- Lowercase Hex Table
-local LHEX_TABLE = {
+local LHEX_TABLE = table_freeze({
   [0] = "0",
   [1] = "1",
   [2] = "2",
@@ -28,10 +31,10 @@ local LHEX_TABLE = {
   [13] = "d",
   [14] = "e",
   [15] = "f",
-}
+})
 
 -- Uppercase Hex Table
-local UHEX_TABLE = {
+local UHEX_TABLE = table_freeze({
   [0] = "0",
   [1] = "1",
   [2] = "2",
@@ -48,17 +51,19 @@ local UHEX_TABLE = {
   [13] = "D",
   [14] = "E",
   [15] = "F",
-}
+})
 
--- Only 32 bit operations to mirror the luajit one
 -- Maps the bit position to the power of 2
 local BIT_TABLE = {}
 
-for i = 0,BITS do
-  BIT_TABLE[i] = math.floor(math.pow(2, i))
+for i = 0,64 do
+  BIT_TABLE[i] = math.floor(2 ^ i)
 end
 
-local function to_unsigned(result)
+-- Only 32 bit operations to mirror the luajit one
+table_freeze(BIT_TABLE)
+
+local function to_u32(result)
   if result < 0 then
     return UINT32_MAX + result + 1
   else
@@ -68,10 +73,10 @@ end
 
 do
   local res
-  res = to_unsigned(-1)
+  res = to_u32(-1)
   assert(res == 0xFFFFFFFF, "expected " .. res .. " to be equal to 0xFFFFFFFF")
 
-  res = to_unsigned(-2)
+  res = to_u32(-2)
   assert(res == 0xFFFFFFFE, "expected " .. res .. " to be equal to 0xFFFFFFFE")
 end
 
@@ -91,10 +96,10 @@ do
   assert(res == -2, "expected " .. res .. " to be equal to -2")
 end
 
-local function to_unsigned_list(list)
+local function to_u32_list(list)
   local result = {}
   for i, v in ipairs(list) do
-    result[i] = to_unsigned(v)
+    result[i] = to_u32(v)
   end
   return result
 end
@@ -107,7 +112,7 @@ local function tohex(x, b)
     b = -b
     ht = UHEX_TABLE
   end
-  local y = to_unsigned(x)
+  local y = to_u32(x)
   local result = {}
   for i = 1,math.floor(b/2) do
     local byte = y % 256
@@ -121,13 +126,9 @@ local function tohex(x, b)
   return table.concat(result)
 end
 
-local function uarshift(x, n)
-  error("I have no idea how to do this, sorry")
-end
-
 local function uband(...)
   local result = 0
-  local v = to_unsigned_list({...})
+  local v = to_u32_list({...})
   local j = #v
 
   for bit_index = 0,(BITS-1) do
@@ -151,7 +152,7 @@ end
 
 local function ubnot(x)
   local result = 0
-  local y = to_unsigned(x)
+  local y = to_u32(x)
   for bit_index = 0,(BITS-1) do
     local base = y % 2
     y = math.floor(y / 2)
@@ -164,7 +165,7 @@ end
 
 local function ubor(...)
   local result = 0
-  local v = to_unsigned_list({...})
+  local v = to_u32_list({...})
   local j = #v
 
   for bit_index = 0,(BITS-1) do
@@ -189,7 +190,7 @@ end
 
 local function ubxor(...)
   local result = 0
-  local v = to_unsigned_list({...})
+  local v = to_u32_list({...})
   local j = #v
 
   for bit_index = 0,(BITS-1) do
@@ -214,25 +215,24 @@ end
 
 local function ulshift(x, n)
   assert(n >= 0)
-  local result = to_unsigned(x)
-  for _ = 1,n do
-    result = math.floor(result * 2)
+  if n >= 32 then
+    return 0
   end
-  return uband(result, 0xFFFFFFFF)
+  local result = to_u32(x) * BIT_TABLE[n]
+  return result % 0x100000000
 end
 
 local function urshift(x, n)
   assert(n >= 0)
-  local result = to_unsigned(x)
-  for _ = 1,n do
-    result = math.floor(result / 2)
+  if n >= 32 then
+    return 0
   end
-  return uband(result, 0xFFFFFFFF)
+  return math.floor(to_u32(x) / BIT_TABLE[n])
 end
 
 local function urol(x, n)
   assert(n >= 0)
-  local y = to_unsigned(x)
+  local y = to_u32(x)
   local result = 0
   for bit_index = 0,(BITS-1) do
     local b = y % 2
@@ -246,7 +246,7 @@ end
 
 local function uror(x, n)
   assert(n >= 0)
-  local y = to_unsigned(x)
+  local y = to_u32(x)
   local result = 0
   for bit_index = 0,(BITS-1) do
     local b = y % 2
@@ -260,7 +260,7 @@ end
 
 local function ubswap(x)
   local a, b, c, d
-  local y = to_unsigned(x)
+  local y = to_u32(x)
   a = y % 256
   y = math.floor(y / 256)
   b = y % 256
@@ -273,7 +273,24 @@ local function ubswap(x)
 end
 
 local function arshift(x, n)
-  return to_signed(uarshift(x, n))
+  assert(n >= 0)
+  if n == 0 then
+    return to_signed(x)
+  end
+  if n >= 32 then
+    n = 31
+  end
+
+  local y = to_u32(x)
+
+  local result = math.floor(y / BIT_TABLE[n])
+
+  if y >= 0x80000000 then
+    local padding = 0xFFFFFFFF - (BIT_TABLE[32 - n] - 1)
+    result = result + padding
+  end
+
+  return to_signed(result)
 end
 
 local function band(...)
@@ -312,7 +329,8 @@ local function bswap(x)
   return to_signed(ubswap(x))
 end
 
-return {
+return table_freeze({
+  BIT_TABLE = BIT_TABLE,
   tohex = tohex,
   arshift = arshift,
   band = band,
@@ -324,4 +342,4 @@ return {
   rol = rol,
   ror = ror,
   rshift = rshift,
-}
+})

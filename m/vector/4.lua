@@ -67,11 +67,10 @@ function m.to_string(v1, sep)
   return v1.x .. sep .. v1.y .. sep .. v1.z .. sep .. v1.w
 end
 
---- @spec inspect(Vector4, sep?: String): String
---- @spec #inspect(sep?: String): String
-function m.inspect(v1, sep)
-  sep = sep or ","
-  return "(" .. v1.x .. sep .. v1.y .. sep .. v1.z .. sep .. v1.w .. ")"
+--- @spec inspect(Vector4): String
+--- @spec #inspect(): String
+function m.inspect(v1)
+  return "(" .. v1.x .. "," .. v1.y .. "," .. v1.z .. "," .. v1.w .. ")"
 end
 
 --- @spec equals(a: Vector4, b: Vector4): Boolean
@@ -103,7 +102,7 @@ end
 
 --- @spec floor(Vector4, Vector4): Vector4
 function m.floor(dest, v2)
-  local v2x, v2y, v2z, v2w = vector3.unwrap(v2)
+  local v2x, v2y, v2z, v2w = m.unwrap(v2)
   dest.x = math.floor(v2x)
   dest.y = math.floor(v2y)
   dest.z = math.floor(v2z)
@@ -113,7 +112,7 @@ end
 
 --- @spec ceil(Vector4, Vector4): Vector4
 function m.ceil(dest, v2)
-  local v2x, v2y, v2z, v2w = vector3.unwrap(v2)
+  local v2x, v2y, v2z, v2w = m.unwrap(v2)
   dest.x = math.ceil(v2x)
   dest.y = math.ceil(v2y)
   dest.z = math.ceil(v2z)
@@ -126,7 +125,7 @@ end
 --- @spec round(dest: Vector4, v1: Vector4, places: Integer): Vector4
 --- @spec #round(v1: Vector4, places: Integer): Vector4
 function m.round(dest, v1, places)
-  local v2x, v2y, v2z, v2w = vector3.unwrap(v1)
+  local v2x, v2y, v2z, v2w = m.unwrap(v1)
   dest.x = number_round(v2x, places)
   dest.y = number_round(v2y, places)
   dest.z = number_round(v2z, places)

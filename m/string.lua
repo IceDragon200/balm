@@ -1,3 +1,6 @@
+local string_find = string.find
+local string_sub = string.sub
+
 --- @namespace balm.m.string
 local m = {}
 
@@ -88,8 +91,8 @@ function m.sub_join(str, cols, joiner)
   local remaining = str
   local i = 1
   while #remaining > 0 do
-    local line = string.sub(remaining, 1, cols)
-    remaining = string.sub(remaining, cols + 1)
+    local line = string_sub(remaining, 1, cols)
+    remaining = string_sub(remaining, cols + 1)
     result[i] = line
     i = i + 1
   end
@@ -125,18 +128,18 @@ end
 
 --- @spec starts_with(str: String, expected: String): Boolean
 function m.starts_with(str, expected)
-  return expected == "" or string.sub(str, 1, #expected) == expected
+  return expected == "" or string_sub(str, 1, #expected) == expected
 end
 
 --- @spec ends_with(str: String, expected: String): Boolean
 function m.ends_with(str, expected)
-  return expected == "" or string.sub(str, -#expected) == expected
+  return expected == "" or string_sub(str, -#expected) == expected
 end
 
 --- @spec trim_leading(str: String, expected: String): String
 function m.trim_leading(str, expected)
-  if string.sub(str, 1, #expected) == expected then
-    return string.sub(str, 1 + #expected, -1)
+  if string_sub(str, 1, #expected) == expected then
+    return string_sub(str, 1 + #expected, -1)
   else
     return str
   end
@@ -144,8 +147,8 @@ end
 
 --- @spec trim_trailing(str: String, expected: String): String
 function m.trim_trailing(str, expected)
-  if string.sub(str, -#expected) == expected then
-    return string.sub(str, 1, -(1 + #expected) )
+  if string_sub(str, -#expected) == expected then
+    return string_sub(str, 1, -(1 + #expected) )
   else
     return str
   end
@@ -182,11 +185,12 @@ end
 --- @spec rsub(String, Integer): String
 function m.rsub(str, len)
   local i = #str - len + 1
-  return string.sub(str, i)
+  return string_sub(str, i)
 end
 
---- @spec split(String, String): [String]
-function m.split(str, pattern)
+--- @spec split(str: String, pattern: String, keep_captures: Boolean): String[]
+function m.split(str, pattern, keep_captures)
+  keep_captures = keep_captures or false
   if str == "" then
     return {}
   end
@@ -195,26 +199,32 @@ function m.split(str, pattern)
 
   if not pattern or pattern == "" then
     for i = 1,#str do
-      result[i] = string.sub(str, i, i)
+      result[i] = string_sub(str, i, i)
     end
   else
     local remaining = str
-    local i = 1
+    local i = 0
     local part
     local head
     local tail
 
     while remaining do
-      head, tail = string.find(remaining, pattern)
+      head, tail = string_find(remaining, pattern)
       if head then
-        part = string.sub(remaining, 1, head - 1)
+        part = string_sub(remaining, 1, head - 1)
+        i = i + 1
         result[i] = part
-        remaining = string.sub(remaining, tail + 1)
+        if keep_captures then
+          part = string_sub(remaining, head, tail)
+          i = i + 1
+          result[i] = part
+        end
+        remaining = string_sub(remaining, tail + 1)
       else
+        i = i + 1
         result[i] = remaining
         remaining = nil
       end
-      i = i + 1
     end
   end
 
@@ -223,8 +233,8 @@ end
 
 --- @spec binary_splice(target: String, start: Integer, byte_count: Integer, bin: String): String
 function m.binary_splice(target, start, byte_count, bin)
-  local head = string.sub(target, 1, start - 1)
-  local tail = string.sub(target, start + byte_count)
+  local head = string_sub(target, 1, start - 1)
+  local tail = string_sub(target, start + byte_count)
 
   local mid
   if type(bin) == "number" then
@@ -235,7 +245,7 @@ function m.binary_splice(target, start, byte_count, bin)
     end
   else
     -- expected to be a string
-    mid = string.sub(bin, 1, byte_count)
+    mid = string_sub(bin, 1, byte_count)
   end
 
   return head .. mid .. tail
@@ -249,7 +259,7 @@ function m.each_char(str, callback)
   local len = #str
   if len > 0 then
     for i = 1,len do
-      callback(string.sub(str, i, i), i)
+      callback(string_sub(str, i, i), i)
     end
   end
 end

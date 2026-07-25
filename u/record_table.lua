@@ -1,0 +1,270 @@
+local assertions = require("balm/m/assertions")
+local table_copy = assert(require("balm/m/table").copy)
+local ID128Generator = require("balm/u/id128_generator")
+local Object = require("balm/object")
+local max = assert(math.max)
+
+--- @namespace balm.u
+
+--- Record tables are simple structures for holding in-game objects with an incrementing ID.
+--- Optionally "records" can have a vanity_id which is a known name.
+--- @class RecordTable<T>
+local RecordTable = Object:extends("balm.u.RecordTable")
+do
+  local ic = RecordTable.instance_class
+
+  --- @override
+  --- @spec #initialize(options: Table): void
+  function ic:initialize(options)
+    options = options or {}
+    ic._super.initialize(self)
+
+    --- @member id_generator: IDGenerator
+    self.id_generator = ID128Generator:new(options.id_generator)
+
+    --- @member id_generator: Record<ID, T>
+    self.data = {}
+
+    if options.data then
+      for id, item in pairs(options.data) do
+        self:put(id, item.vanity_id, item)
+      end
+    end
+  end
+
+  --- @override
+  --- @spec #initialize_copy(other: RecordTable): void
+  function ic:initialize_copy(other)
+    ic._super.initialize_copy(self, other)
+
+    self.id_generator = other.id_generator:copy()
+    self.data = table_copy(other.data)
+  end
+
+  --- Copies not only the record table, but also its data deeply.
+  --- @spec #deep_copy(): void
+  function ic:deep_copy()
+    local other = self:copy()
+    local data = other.data
+    other.data = {}
+    for id, obj in pairs(data) do
+      if type(obj.deep_copy) == "function" then
+        other.data[id] = obj:deep_copy()
+      elseif type(obj.copy) == "function" then
+        other.data[id] = obj:copy()
+      else
+        other.data[id] = table_copy(obj)
+      end
+    end
+    return other
+  end
+
+  --- @spec #reset(): void
+  function ic:reset()
+    self.id_generator:reset()
+    self.data = {}
+  end
+
+  --- @since "2026.6.2"
+  --- @spec #size(): Number
+  function ic:size()
+    local result = 0
+    for _, _ in pairs(self.data) do
+      result = result + 1
+    end
+    return result
+  end
+
+  --- @since "2026.6.6"
+  --- @spec #keys(): ID[]
+  function ic:keys()
+    local i = 0
+    local result = {}
+    for key, _ in pairs(self.data) do
+      i = i + 1
+      result[i] = key
+    end
+    return result
+  end
+
+  --- @since "2026.6.6"
+  --- @spec #values(): ID[]
+  function ic:values()
+    local i = 0
+    local result = {}
+    for _, value in pairs(self.data) do
+      i = i + 1
+      result[i] = value
+    end
+    return result
+  end
+
+  --- @spec #put(id: ID, vanity_id: String, subject: T): T
+  function ic:put(id, vanity_id, subject)
+    if vanity_id then
+      self.id_generator:add_vanity(id, vanity_id)
+    end
+    subject.id = id
+    subject.vanity_id = vanity_id
+    self.data[id] = subject
+    return subject
+  end
+
+  --- @spec #add(vanity_id: String, subject: T): T
+  function ic:add(vanity_id, subject)
+    if not self.id_generator then
+      error("cannot add records to this table without an id generator, try #put/2 intsead")
+    end
+    local id = self.id_generator:next(vanity_id)
+    subject.id = id
+    subject.vanity_id = vanity_id
+    self.data[subject.id] = subject
+    return subject
+  end
+
+  --- @spec #import(record: Record<ID, T>): self
+  function ic:import(record)
+    if next(self.data) then
+      error("cannot import if data is not empty")
+    end
+    for key, value in pairs(record) do
+      assertions.is_number(key)
+      self.id_generator.x = max(self.id_generator.x, key)
+      self.data[key] = value
+    end
+    return self
+  end
+
+  --- @spec #remove_by_id(id: ID): T | nil
+  function ic:remove_by_id(id)
+    local subject = self.data[id]
+    if subject then
+      self.data[id] = nil
+      self.id_generator:remove_id(id)
+      return subject
+    end
+    return nil
+  end
+
+  --- @spec #remove_by_vanity_id(vanity_id: ID): T | nil
+  function ic:remove_by_vanity_id(vanity_id)
+    local id = self.id_generator.vanity[vanity_id]
+    if id then
+      local subject = self.data[id]
+      if subject then
+        self.data[id] = nil
+        self.id_generator:remove_id(id)
+        return subject
+      end
+    end
+    return nil
+  end
+
+  --- @spec #get_id(vanity_id: String): ID | nil
+  function ic:get_id(vanity_id)
+    return self.id_generator:get_id(vanity_id)
+  end
+
+  --- @spec #get(id: ID): T | nil
+  function ic:get(id)
+    return self.data[id]
+  end
+
+  --- @spec #get_by_vanity_id(vanity_id: String): T | nil
+  function ic:get_by_vanity_id(vanity_id)
+    local id = self.id_generator:get_id(vanity_id)
+    if id then
+      return self.data[id]
+    end
+    return nil
+  end
+
+  --- @since "2026.6.28"
+  --- @spec #get_by_ref(ref: Table): T | nil
+  function ic:get_by_ref(ref)
+    if ref.id then
+      return self:get(ref.id)
+    elseif ref.vanity_id then
+      return self:get_by_vanity_id(ref.vanity_id)
+    end
+    return nil
+  end
+
+  --- @spec #fetch_id(vanity_id: String): ID | nil
+  function ic:fetch_id(vanity_id)
+    local id = self.id_generator:get_id(vanity_id)
+    if id then
+      return id
+    end
+    error("no id for vanity_id=" .. vanity_id)
+  end
+
+  --- @spec #fetch(id: ID): T
+  function ic:fetch(id)
+    local subject = self.data[id]
+    if not subject then
+      error("record does not exist id=" .. id)
+    end
+    return subject
+  end
+
+  --- @spec #fetch_by_vanity_id(vanity_id: String): T
+  function ic:fetch_by_vanity_id(vanity_id)
+    local id = self.id_generator.vanity[vanity_id]
+    if not id then
+      error("record does not exist vanity_id=" .. vanity_id)
+    end
+    local subject = self.data[id]
+    if not subject then
+      error("CRITICAL: record does not exist id=" .. id)
+    end
+    return subject
+  end
+
+  --- @spec #has_id(id: ID): Boolean
+  function ic:has_id(id)
+    return self.data[id] ~= nil
+  end
+
+  --- @since "2026.5.21"
+  --- @spec #each(callback: (entry: T, id: ID) => void): self
+  function ic:each(callback)
+    for id, entry in pairs(self.data) do
+      callback(entry, id)
+    end
+    return self
+  end
+
+  --- @since "2026.6.29"
+  --- @spec #reduce<A>(acc: A, callback: (entry: T, id: ID, acc: A) => A): A
+  function ic:reduce(acc, callback)
+    for id, entry in pairs(self.data) do
+      acc = callback(entry, id, acc)
+    end
+    return acc
+  end
+
+  --- @since "2026.6.29"
+  --- @spec #is_all(callback: (entry: T, id: ID) => Boolean): Boolean
+  function ic:is_all(callback)
+    for id, entry in pairs(self.data) do
+      if not callback(entry, id) then
+        return false
+      end
+    end
+    return true
+  end
+
+  --- @since "2026.6.29"
+  --- @spec #is_any(callback: (entry: T, id: ID) => Boolean): Boolean
+  function ic:is_any(callback)
+    for id, entry in pairs(self.data) do
+      if callback(entry, id) then
+        return true
+      end
+    end
+    return false
+  end
+end
+
+return RecordTable

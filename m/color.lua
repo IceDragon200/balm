@@ -1,7 +1,7 @@
 --- @namespace balm.m.color
 local hex_encoding = require("balm/m/string/hex_encoding")
 local btable = require("balm/m/table")
-
+local inspect = assert(require("balm/m/value").inspect)
 local byte_to_hexpair = assert(hex_encoding.byte_to_hexpair)
 local hexpair_to_byte = assert(hex_encoding.hex_pair_to_byte)
 local nibble_to_hex = assert(hex_encoding.nibble_to_hex)
@@ -15,8 +15,19 @@ local function hex_to_color_value(hex)
   return hexpair_to_byte(hex .. hex) / 255.0
 end
 
-local Color = {
+local pargs = { "r", "g", "b", "a" }
 
+local Color
+Color = {
+  metatable = {
+    __index = function (v, key)
+      return rawget(v, pargs[key]) or Color[key]
+    end,
+
+    __newindex = function (v, key, value)
+      rawset(v, pargs[key] or key, value)
+    end,
+  },
 }
 
 --- @type Byte: 0..255
@@ -63,12 +74,12 @@ end
 ---
 --- @spec new(r: Float, g: Float, b: Float, a?: Float): Color
 function Color.new(r, g, b, a)
-  return { r = r, g = g, b = b, a = a or 1.0 }
+  return setmetatable({ r = r, g = g, b = b, a = a or 1.0 }, Color.metatable)
 end
 
 --- @spec copy(Color): Color
 function Color.copy(color)
-  return new(
+  return Color.new(
     color.r,
     color.g,
     color.b,
@@ -95,7 +106,7 @@ function Color.add(d, a, b)
 end
 
 --- @spec sub(Color, Color): Color
-function Color.sub(a, b)
+function Color.sub(d, a, b)
   d.r = color_channel_clamp((a.r * a.a) - (b.r * b.a))
   d.g = color_channel_clamp((a.g * a.a) - (b.g * b.a))
   d.b = color_channel_clamp((a.b * a.a) - (b.b * b.a))
@@ -201,8 +212,19 @@ function Color.from_rgb24(r, g, b)
   )
 end
 
+--- @spec from_rgba32(r: Byte, g: Byte, b: Byte, a: Byte): Color
+function Color.from_rgba32(r, g, b, a)
+  return Color.new(
+    color_channel_clamp(r / 255.0),
+    color_channel_clamp(g / 255.0),
+    color_channel_clamp(b / 255.0),
+    color_channel_clamp(a / 255.0)
+  )
+end
+
 --- Converts the given colorstring into a Color table or nil if it was named but doesn't exist.
 ---
+--- @exception
 --- @spec from_colorstring(colorstring: String): Color | nil
 function Color.from_colorstring(colorstring)
   if colorstring:sub(1, 1) == "#" then
@@ -285,7 +307,7 @@ function Color.maybe_to_colorstring(value)
       return Color.to_string24(value)
     end
   else
-    error("unexpected color value=" .. dump(value))
+    error("unexpected color value=" .. inspect(value))
   end
 end
 
@@ -298,7 +320,7 @@ function Color.maybe_to_color(value)
     assert(value.r and value.g and value.b and value.a)
     return value
   else
-    error("unexpected value=" .. dump(value))
+    error("unexpected value=" .. inspect(value))
   end
 end
 

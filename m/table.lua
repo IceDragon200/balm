@@ -1,3 +1,5 @@
+local random = assert(math.random)
+
 --- @namespace balm.m.table
 
 local m = {}
@@ -7,8 +9,14 @@ local m = {}
 --- @spec freeze(Table): Table
 function m.freeze(a)
   assert(type(a) == "table", "expected a table")
-  setmetatable(a, getmetatable(a) or {})
-  getmetatable(a).__newindex = {}
+  local mt = getmetatable(a)
+  if mt then
+    mt = m.copy(mt)
+  else
+    mt = {}
+  end
+  mt.__newindex = {}
+  setmetatable(a, mt)
   return a
 end
 
@@ -35,9 +43,32 @@ function m.concat(...)
   return result
 end
 
+--- Splits the given table off into a new table by the given keys
+--- @since "2026.6.5"
+--- @mutative
+--- @spec split(t: Table, key: Any): Table
+function m.split(t, keys)
+  local result = {}
+  for _, key in ipairs(keys) do
+    result[key] = t[key]
+    t[key] = nil
+  end
+  return result
+end
+
+--- Removes the specified entry by key and returns it.
+--- @since "2026.6.5"
+--- @mutative
+--- @spec pop(t: Table, key: Any): Any
+function m.pop(t, key)
+  local v = t[key]
+  t[key] = nil
+  return v
+end
+
 --- Copy the specified keys from the given table, returning a new table with those keys
 ---
---- @spec take(t: Table, keys: String[]): Table
+--- @spec take(t: Table, keys: Any[]): Table
 function m.take(t, keys)
   local result = {}
 
@@ -52,7 +83,7 @@ end
 --- This will return the same table.
 ---
 --- @mutative
---- @spec drop(Table, keys: String[]): Table
+--- @spec drop(Table, keys: Any[]): Table
 function m.drop(t, keys)
   for _, key in ipairs(keys) do
     t[key] = nil
@@ -99,7 +130,7 @@ end
 --- have a table value, one will be created and the value will be inserted into it
 ---
 --- @mutative t
---- @spec cpush(t: Table, key: String, value: Any): Table
+--- @spec cpush(t: Table, key: Any, value: Any): Table
 function m.cpush(t, key, value)
   if not t[key] then
     t[key] = {}
@@ -169,11 +200,11 @@ end
 --- deduplicate any values for sake of performance.
 ---
 --- @recursive unsafe
---- @spec deep_copy(Table): Table
-function m.deep_copy(tab)
+--- @spec deep_copy(t: Table): Table
+function m.deep_copy(t)
   local result = {}
 
-  for key, value in pairs(tab) do
+  for key, value in pairs(t) do
     if type(value) == "table" then
       result[key] = m.deep_copy(value)
     else
@@ -326,7 +357,7 @@ function m.sample(t)
   if next(t) then
     local keys = m.keys(t)
     local len = #keys
-    local key = keys[math.random(len)]
+    local key = keys[random(len)]
 
     return key, t[key]
   end
@@ -366,8 +397,6 @@ end
 --- @since "1.31.0"
 --- @spec find(t: Table<K, V>, (key: K, value: V) => Boolean): (key: K | nil, value: V | nil)
 function m.find(t, predicate)
-  local result = {}
-
   for key, value in pairs(t) do
     if predicate(key, value) then
       return key, value

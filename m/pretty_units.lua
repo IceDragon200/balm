@@ -13,20 +13,21 @@ end
 
 --- @type Prefix: { [1]: (si_prefix: String), [2]: (si_code: String), [3]: Number }
 
+--- @const BINARY_PREFIXES: Prefix[]
 m.BINARY_PREFIXES = {
-  {"yobi", "Yi", math.pow(2, 80)},
-  {"zebi", "Zi", math.pow(2, 70)},
-  {"exbi", "Ei", math.pow(2, 60)},
-  {"pebi", "Pi", math.pow(2, 50)},
-  {"tebi", "Ti", math.pow(2, 40)},
-  {"gibi", "Gi", math.pow(2, 30)},
-  {"mebi", "Mi", math.pow(2, 20)},
-  {"kibi", "Ki", math.pow(2, 10)},
+  {"yobi", "Yi", 2 ^ 80},
+  {"zebi", "Zi", 2 ^ 70},
+  {"exbi", "Ei", 2 ^ 60},
+  {"pebi", "Pi", 2 ^ 50},
+  {"tebi", "Ti", 2 ^ 40},
+  {"gibi", "Gi", 2 ^ 30},
+  {"mebi", "Mi", 2 ^ 20},
+  {"kibi", "Ki", 2 ^ 10},
   {"", "", 1},
 }
 
---- @const ALL_PREFIXES: Prefix[]
-m.ALL_PREFIXES = {
+--- @const METRIC_PREFIXES: Prefix[]
+m.METRIC_PREFIXES = {
   {"yotta", "Y", 1e+24},
   {"zetta", "Z", 1e+21},
   {"exa",   "E", 1e+18},
@@ -49,6 +50,9 @@ m.ALL_PREFIXES = {
   {"zepto", "z", 1e-21},
   {"yocto", "y", 1e-24},
 }
+
+--- @const ALL_PREFIXES: Prefix[]
+m.ALL_PREFIXES = m.METRIC_PREFIXES
 
 --- @const COMMON_PREFIXES: Prefix[]
 m.COMMON_PREFIXES = {

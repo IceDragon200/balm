@@ -15,7 +15,7 @@ do
 
   --- @spec #initialize(): void
   function ic:initialize()
-    self._super.initialize(self)
+    ic._super.initialize(self)
     self.timer_id = 0
     self.timers = {}
     self.dead_timers = {}

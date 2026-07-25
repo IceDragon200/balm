@@ -56,16 +56,12 @@ end
 
 --- @spec #initialize_copy(LinkedList<T>): void
 function ic:initialize_copy(other)
+  ic._super.initialize_copy(self, other)
+  self.next = nil
+  self.tail = nil
   for _, item in other:each() do
     self:push(item)
   end
-end
-
---- @spec #copy(): LinkedList<T>
-function ic:copy()
-  local ll = self._class:alloc()
-  ll:initialize_copy(self)
-  return ll
 end
 
 --- @spec #to_linked_list(): LinkedList<T>

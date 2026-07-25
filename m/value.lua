@@ -1,40 +1,91 @@
---- @namespace balm.m.value
+local table_concat = assert(table.concat)
+local string_format = assert(string.format)
+local Limits = require("balm/limits")
 
+--- @namespace balm.m.value
 local m = {}
 
---- Similar to minetest's dump/1, but doesn't make it pretty, in other words, it's junked output.
----
---- @since "2024.7.23"
---- @spec inspect(Any, depth: Integer, max_depth: Integer): String
-function inspect(value, depth, max_depth)
-  depth = depth or 0
-  max_depth = max_depth or 20
-  if depth > max_depth then
-    return "&recursive?"
-  end
-
-  local ty = type(value)
-  if ty == "table" then
-    local result = {}
-    for key, value in pairs(value) do
-      table.insert(
-        result,
-        inspect(key, depth + 1) ..
-        "=" ..
-        inspect(value, depth + 1)
-      )
-    end
-    return "{" .. table.concat(result, ",") .. "}"
-  elseif ty == "string" then
-    --- TODO: do this properly, bleh
-    return "\"" .. tostring(value) .. "\""
-  -- elseif ty == "boolean" or ty == "boolean" or ty == "number" then
-  else
-    return tostring(value)
-  end
+local function inspect_write(self, x)
+  self.i = self.i + 1
+  self.data[self.i] = x
 end
 
-m.inspect = inspect
+---
+--- @since "2026.5.9"
+--- @spec inspect(root: Any, ctx: Any, is_raw: Boolean): String
+function m.inspect(root, ctx, is_raw)
+  if not ctx then
+    ctx = {
+      ref_id = 0,
+      refs = {},
+    }
+  end
+
+  local buf = {
+    i = 0,
+    data = {},
+    write = inspect_write,
+  }
+
+  local function maybe_ref_write(value)
+    local ref_id = ctx.refs[value]
+    if ref_id == nil then
+      ctx.ref_id = ctx.ref_id + 1
+      ctx.refs[value] = ctx.ref_id
+      buf:write("<&")
+      buf:write(ctx.ref_id)
+      buf:write(">")
+      buf:write(m.inspect(value, ctx))
+    else
+      buf:write("*")
+      buf:write(ref_id)
+    end
+  end
+
+  local ty = type(root)
+  if "userdata" == ty then
+    return string_format("<$%q>", root)
+  elseif "table" == ty  then
+    if not is_raw and type(root.inspect) == "function" then
+      return root:inspect(ctx)
+    end
+
+    local idx = 0
+    buf:write("{")
+    for key, value in pairs(root) do
+      if idx > 0 then
+        buf:write(",")
+      end
+      idx = idx + 1
+      if type(key) == "table" then
+        maybe_ref_write(key)
+      else
+        buf:write(m.inspect(key, ctx))
+      end
+      buf:write("=")
+      if type(value) == "table" then
+        maybe_ref_write(value)
+      else
+        buf:write(m.inspect(value, ctx))
+      end
+    end
+    buf:write("}")
+    return table_concat(buf.data, "")
+  elseif ty == "function" then
+    return string_format("%s", root)
+  elseif ty == "number" then
+    local is_int = (root - math.floor(root)) == 0
+    if is_int and root >= Limits.IMIN[52] and root <= Limits.IMAX[52] then
+      return string_format("%d", root)
+    else
+      return string_format("%f", root)
+    end
+  elseif ty == "string" then
+    return string_format("%q", root)
+  else
+    return tostring(root)
+  end
+end
 
 --- @since "2024.7.23"
 --- @spec is_blank(value: Any): Boolean
@@ -100,5 +151,38 @@ local function deep_equals(a, b, depth, max_depth)
 end
 
 m.deep_equals = deep_equals
+
+--- @since "2026.5.9"
+--- @spec matches(lhv: Any, pattern: Any): Boolean
+function m.matches(lhv, pattern)
+  if rawequal(lhv, pattern) then
+    return true
+  end
+  if type(lhv) == "table" then
+    if type(lhv.matches) == "function" then
+      return lhv:matches(pattern)
+    elseif lhv.matches == false then
+      -- always return false
+      return false
+    end
+
+    return m.rawmatches(lhv, pattern)
+  end
+  return false
+end
+
+--- @since "2026.5.9"
+--- @spec rawmatches(lhv: Any, pattern: Any): Boolean
+function m.rawmatches(lhv, pattern)
+  if type(pattern) == "table" then
+    for key, rhp in pairs(pattern) do
+      if not m.matches(lhv[key], rhp) then
+        return false
+      end
+    end
+    return true
+  end
+  return false
+end
 
 return m

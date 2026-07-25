@@ -17,7 +17,7 @@ function NaiveDateTime:utc_now()
   local d = os.date("%Y %m %d %H %M %S %z")
 
   local c = string_split(d, " ")
-  local zone = c[7]
+  -- local zone = c[7]
   -- FIXME: adjust datetime by zone offset
   return self:new(
           tonumber(c[1]), tonumber(c[2]), tonumber(c[3]), -- Y m d

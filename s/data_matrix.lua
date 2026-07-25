@@ -35,6 +35,7 @@ do
   --- @mutative self
   --- @spec #initialize_copy(other: DataMatrix): void
   function ic:initialize_copy(other)
+    ic._super.initialize_copy(self, other)
     self.m_w = other.m_w
     self.m_h = other.m_h
     self.m_d = other.m_d
@@ -43,17 +44,6 @@ do
     for i = 1,self.m_volume do
       self.m_data[i] = other.m_data[i]
     end
-  end
-
-  --- Creates a copy of the data matrix, note that the data is only,
-  --- copied at the top-level, if a cell contains any tables those
-  --- will be left as is.
-  ---
-  --- @spec #copy(): DataMatrix
-  function ic:copy()
-    local result = self._class:alloc()
-    result:initialize_copy(self)
-    return result
   end
 
   function ic:_validate_declared_size()
@@ -155,9 +145,9 @@ do
 
   function ic:index_to_xyz(i1)
     local i = i1 - 1
-    x = math.floor(i % self.m_w)
-    y = math.floor((i / self.m_w) % self.m_h)
-    z = math.floor((i / self.m_h) / self.m_w)
+    local x = math.floor(i % self.m_w)
+    local y = math.floor((i / self.m_w) % self.m_h)
+    local z = math.floor((i / self.m_h) / self.m_w)
     return x, y, z
   end
 

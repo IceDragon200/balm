@@ -63,10 +63,9 @@ function m.to_string(v1, seperator)
   return v1.x .. seperator .. v1.y .. seperator .. v1.z
 end
 
---- @spec inspect(Vector3, seperator?: String): String
-function m.inspect(v1, seperator)
-  seperator = seperator or ","
-  return "(" .. v1.x .. seperator .. v1.y .. seperator .. v1.z .. ")"
+--- @spec inspect(Vector3): String
+function m.inspect(v1)
+  return "(" .. v1.x .. "," .. v1.y .. "," .. v1.z .. ")"
 end
 
 --- @spec equals(a: Vector3, b: Vector3): Boolean

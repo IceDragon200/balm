@@ -1,4 +1,12 @@
 local number_round = require("balm/m/number").round
+local pack = require("balm/m/pack")
+local pack_v2 = pack.pack_v2
+local unpack_v2 = pack.unpack_v2
+local ceil = assert(math.ceil)
+local floor = assert(math.floor)
+local min = assert(math.min)
+local abs = assert(math.abs)
+local atan2 = assert(math.atan2 or math.atan)
 
 --- @namespace balm.m.vector2
 local xy = {"x", "y"}
@@ -43,6 +51,18 @@ function m.copy(v1)
   return m.new(v1.x, v1.y)
 end
 
+--- @since "2026.6.20"
+--- @spec from_radians(rads: Number): Vector2
+function m.from_radians(rads)
+  return m.new(math.cos(rads), math.sin(rads))
+end
+
+--- @since "2026.6.20"
+--- @spec from_degrees(deg: Number): Vector2
+function m.from_degrees(deg)
+  return m.from_radians((deg % 360) * math.pi / 180)
+end
+
 --- @spec unwrap(Any): (Number, Number)
 function m.unwrap(v)
   if type(v) == "table" then
@@ -64,11 +84,9 @@ function m.to_string(v2, seperator)
   return v2.x .. seperator .. v2.y
 end
 
---- @since "1.29.0"
---- @spec inspect(Vector2, seperator?: String): String
-function m.inspect(v2, seperator)
-  seperator = seperator or ","
-  return "(" .. v2.x .. seperator .. v2.y .. ")"
+--- @spec inspect(Vector2): String
+function m.inspect(v2)
+  return string.format("balm.m.vector.2<%f, %f>", v2.x, v2.y)
 end
 
 --- @spec equals(a: Vector2, b: Vector2): Boolean
@@ -87,25 +105,44 @@ function m.distance(a, b)
 end
 
 --- @since "1.29.0"
---- @spec length(a: Vector2): Number
+--- @spec length(v2: Vector2): Number
 --- @spec #length(): Number
-function m.length(a)
-  return math.sqrt(a.x * a.x + a.y * a.y)
+function m.length(v2)
+  return math.sqrt(v2.x * v2.x + v2.y * v2.y)
+end
+
+--- @since "2026.6.20"
+--- @spec radians(a: Vector2): Number
+--- @spec #radians(): Number
+function m.radians(v2)
+  return atan2(v2.y, v2.x)
+end
+
+--- @since "2026.6.10"
+--- @spec angle(a: Vector2): Number
+--- @spec #angle(): Number
+m.angle = m.radians
+
+--- @since "2026.6.10"
+--- @spec degrees(a: Vector2): Number
+--- @spec #degrees(): Number
+function m.degrees(v2)
+  return m.radians(v2) * 180 / math.pi
 end
 
 --- @spec floor(dest: Vector2, v2: Vector2): Vector2
 function m.floor(dest, v2)
   local v2x, v2y = m.unwrap(v2)
-  dest.x = math.floor(v2x)
-  dest.y = math.floor(v2y)
+  dest.x = floor(v2x)
+  dest.y = floor(v2y)
   return dest
 end
 
 --- @spec ceil(dest: Vector2, v2: Vector2): Vector2
 function m.ceil(dest, v2)
   local v2x, v2y = m.unwrap(v2)
-  dest.x = math.ceil(v2x)
-  dest.y = math.ceil(v2y)
+  dest.x = ceil(v2x)
+  dest.y = ceil(v2y)
   return dest
 end
 
@@ -121,7 +158,16 @@ function m.round(dest, v2, places)
   return dest
 end
 
---- @spec dot(Vector2, Vector2): Vector2
+--- @since "2026.5.7"
+--- @spec negate(dest: Vector2, v2: Vector2): Vector2
+function m.negate(dest, v2)
+  local x, y = m.unwrap(v2)
+  dest.x = -x
+  dest.y = -y
+  return dest
+end
+
+--- @spec dot(Vector2, Vector2): Number
 function m.dot(v1, v2)
   return v1.x * v2.x + v1.y * v2.y
 end
@@ -133,6 +179,18 @@ function m.normalize(dest, v1)
   local x, y = m.unwrap(v1)
   local len = math.sqrt(x * x + y * y)
   return m.divide(dest, v1, len)
+end
+
+--- @since "2026.5.7"
+--- @spec #relative(dest: Vector2, v1: Vector2): Vector2
+function m.relative(dest, v1)
+  local x, y = m.unwrap(v1)
+  local d = min(abs(x), abs(y))
+  if d > 0 then
+    dest.x = dest.x / d
+    dest.y = dest.y / d
+  end
+  return dest
 end
 
 --- @spec add(dest: Vector2, Vector2, Vector2): Vector2
@@ -176,8 +234,8 @@ function m.idivide(dest, v1, v2)
   local v1x, v1y = m.unwrap(v1)
   local v2x, v2y = m.unwrap(v2)
 
-  dest.x = math.floor(v1x / v2x)
-  dest.y = math.floor(v1y / v2y)
+  dest.x = floor(v1x / v2x)
+  dest.y = floor(v1y / v2y)
   return dest
 end
 
@@ -210,6 +268,19 @@ function m.slerp(dest, v1, v2, t)
   dest = m.multiply(dest, v1, math.cos(theta))
   tmp = m.multiply(tmp, tmp, math.sin(theta))
   return m.add(dest, dest, tmp)
+end
+
+--- @spec #to_hash(bits: Number): Number
+function m.to_hash(src, bits)
+  return pack_v2(bits, src.x, src.y)
+end
+
+--- @spec #from_hash(bits: Number, hash4: Number): Vector2
+function m.from_hash(dest, bits, hash)
+  local x, y = unpack_v2(bits, hash)
+  dest.x = x
+  dest.y = y
+  return dest
 end
 
 --- Intended to be used by persistence systems to dump a vector2 to a plain table
@@ -283,6 +354,26 @@ function m.metatable.__div(a, b)
   return m.new(
     a.x / v2x,
     a.y / v2y
+  )
+end
+
+--- @since "2026.6.20"
+--- @spec metatable.__mod(Vector2, Vector2): Vector2
+function m.metatable.__mod(a, b)
+  local v2x, v2y = m.unwrap(b)
+  return m.new(
+    a.x % v2x,
+    a.y % v2y
+  )
+end
+
+--- @since "2026.6.20"
+--- @spec metatable.__pow(Vector2, Vector2): Vector2
+function m.metatable.__pow(a, b)
+  local v2x, v2y = m.unwrap(b)
+  return m.new(
+    a.x ^ v2x,
+    a.y ^ v2y
   )
 end
 

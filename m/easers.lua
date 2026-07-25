@@ -17,7 +17,7 @@ function m.quad_out(k)
   return k * (2 - k)
 end
 
-function m.in_out(k)
+function m.quad_in_out(k)
   k = k * 2
   if k < 1 then
     return 0.5 * k * k;
@@ -81,7 +81,7 @@ function m.quint_in_out(k)
 end
 
 function m.sine_in(k)
-  return 1 - math.sin(k * math.pi / 2)
+  return 1 - math.cos(k * math.pi / 2)
 end
 
 function m.sine_out(k)
@@ -89,14 +89,14 @@ function m.sine_out(k)
 end
 
 function m.sine_in_out(k)
-  return 0.5 * (1 - math.cos(math.pi * 2))
+  return 0.5 * (1 - math.cos(math.pi * k))
 end
 
 function m.expo_in(k)
   if k == 0 then
     return 0
   else
-    return math.pow(1024, k - 1)
+    return 1024 ^ (k - 1)
   end
 end
 
@@ -104,7 +104,7 @@ function m.expo_out(k)
   if k == 1 then
     return 1
   else
-    return 1 - math.pow(2, -10 * k)
+    return 1 - (2 ^ (-10 * k))
   end
 end
 
@@ -118,10 +118,10 @@ function m.expo_in_out(k)
   end
   k = k * 2
   if k < 1 then
-    return 0.5 * math.pow(1024, k - 1)
+    return 0.5 * (1024 ^ (k - 1))
   end
 
-  return 0.5 * (-math.pow(2, -10 * (k - 1)) + 2)
+  return 0.5 * (-(2 ^ (-10 * (k - 1))) + 2)
 end
 
 function m.circ_in(k)
@@ -151,7 +151,7 @@ function m.elastic_in(k)
     return 1
   end
 
-  return -math.pow(2, 10 * (k - 1)) * math.sin((k - 1.1) * 5 * math.pi)
+  return -(2 ^ (10 * (k - 1))) * math.sin((k - 1.1) * 5 * math.pi)
 end
 
 function m.elastic_out(k)
@@ -163,7 +163,7 @@ function m.elastic_out(k)
     return 1
   end
 
-  return math.pow(2, -10 * k) * math.sin((k - 0.1) * 5 * math.pi) + 1
+  return (2 ^ (-10 * k)) * math.sin((k - 0.1) * 5 * math.pi) + 1
 end
 
 function m.elastic_in_out(k)
@@ -178,10 +178,10 @@ function m.elastic_in_out(k)
   k = k * 2
 
   if k < 1 then
-    return -0.5 * math.pow(2, 10 * (k - 1)) * math.sin((k - 1.1) * 5 * math.pi)
+    return -0.5 * (2 ^ (10 * (k - 1))) * math.sin((k - 1.1) * 5 * math.pi)
   end
 
-  return 0.5 * math.pow(2, -10 * (k - 1)) * math.sin((k - 1.1) * 5 * math.pi) + 1
+  return 0.5 * (2 ^ (-10 * (k - 1))) * math.sin((k - 1.1) * 5 * math.pi) + 1
 end
 
 function m.back_in(k)

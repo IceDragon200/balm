@@ -1,3 +1,7 @@
+local floor = assert(math.floor)
+local random = assert(math.random)
+local min = assert(math.min)
+
 --- @namespace balm.m.list
 local m = {}
 
@@ -10,7 +14,7 @@ local CROCKFORD_BASE32_ENCODE_TABLE = assert(encoding_tables.CROCKFORD_BASE32_EN
 local POW2 = {}
 
 for x = 0,31 do
-  POW2[x] = math.pow(2, x * 8)
+  POW2[x] = 2 ^ (x * 8)
 end
 
 --- Encodes a list of integers or strings as crawford base32, the list should contain interspersed
@@ -49,7 +53,7 @@ function m.crawford_base32_le_rolling_encode_table(...)
     i = i + 2
     -- determine the number segments that is the integer's byte count (as bits)
     -- divided by the base32 bit length (5), floored
-    segments = math.floor(ilen * 8 / 5)
+    segments = floor(ilen * 8 / 5)
 
     if type(item) == "string" then
       str = item
@@ -68,7 +72,7 @@ function m.crawford_base32_le_rolling_encode_table(...)
       error("unexpected item")
     end
 
-    int = math.floor(int)
+    int = floor(int)
 
     for _ = 1,segments do
       -- add 5 bits of the int to the accumulator
@@ -76,9 +80,9 @@ function m.crawford_base32_le_rolling_encode_table(...)
       -- modulo the accumulator to get the next value
       value = acc % 32
       -- reduce the accumulator
-      acc = math.floor(acc / 32)
+      acc = floor(acc / 32)
       -- reduce the primary integer
-      int = math.floor(int / 32)
+      int = floor(int / 32)
       -- write the encoded value
       result[r] = CROCKFORD_BASE32_ENCODE_TABLE[value]
       -- increment the result index
@@ -88,7 +92,7 @@ function m.crawford_base32_le_rolling_encode_table(...)
 
   while acc > 0 do
     value = acc % 32
-    acc = math.floor(acc / 32)
+    acc = floor(acc / 32)
     result[r] = CROCKFORD_BASE32_ENCODE_TABLE[value]
     r = r + 1
   end
@@ -113,7 +117,7 @@ local list_slice = m.slice
 --- @spec list_last(Table, count: Integer): Any
 function m.last(t, count)
   if count then
-    count = math.min(#t, count)
+    count = min(#t, count)
     return list_slice(t, #t - count + 1, count)
   else
     return t[#t]
@@ -163,7 +167,7 @@ end
 --- @spec list_sample(list: Table): Any
 function m.sample(list)
   local c = #list
-  return list[math.random(c)]
+  return list[random(c)]
 end
 
 --- Retrieves the next value after the specified 'current'
@@ -233,7 +237,7 @@ function m.split(list, alen)
 
   if source_len > 0 then
     if alen > 0 then
-      for i = 1,math.min(alen, source_len) do
+      for i = 1,min(alen, source_len) do
         head[i] = list[i]
       end
     end
@@ -359,8 +363,6 @@ end
 ---   (value: V, index: K) => Boolean
 --- ): (value: V | nil, index: K | nil)
 function m.find(t, predicate)
-  local result = {}
-
   for index, value in ipairs(t) do
     if predicate(value, index) then
       return value, index
@@ -385,7 +387,7 @@ function m.bsearch_by(t, predicate)
     local elem
     local res
     while lo <= hi do
-      idx = lo + math.floor((hi - lo) / 2)
+      idx = lo + floor((hi - lo) / 2)
       elem = t[idx]
 
       res = predicate(elem, idx)
